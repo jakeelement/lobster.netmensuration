@@ -1,16 +1,24 @@
-Package: ecomodTemplate
-Title: Package that interacts with ecomod and associated projects to ... 
+Package: netmensuration
+Title: Package that interacts with ecomod and associated projects to 
+  handle net mensuration data streams
 Version: 0.1
-Authors@R: c( person("Firstname", "Lastname", email="xxx@xxx.xxx", role=c("aut", "cre")) ) 
-Description: This project interacts with the functionality of ecomod 
-    to do something very special ...
+Authors@R: c( person("Jae", "Choi", email="jae.choi@dfo-mpo.gc.ca", role=c("aut", "cre")) ) 
+Description: This project interacts with the functionality of ecomod and 
+  associated projects to handle net mensuration data streams and compute 
+  a few useful statistics. Currently, Netmind, Seabird, Minilog, Scanmar 
+  and Marport data are supported.
 Depends: R (>= 3.0.0)
 Imports: 
-  ecomodUtils
+  ecomodUtils,
+  INLA,
+  lubridate,
+  Matrix
 Suggests:
+  sp,
+  splines,
   groundfish
 License: MIT
 LazyData: true
-URL: https://github.com/XXX/ecomodTemplate/
+URL: https://github.com/jae0/netmensuration/
 
 
