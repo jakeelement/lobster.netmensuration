@@ -1,0 +1,16 @@
+Package: ecomodTemplate
+Title: Package that interacts with ecomod and associated projects to ... 
+Version: 0.1
+Authors@R: c( person("Firstname", "Lastname", email="xxx@xxx.xxx", role=c("aut", "cre")) ) 
+Description: This project interacts with the functionality of ecomod 
+    to do something very special ...
+Depends: R (>= 3.0.0)
+Imports: 
+  ecomodUtils
+Suggests:
+  groundfish
+License: MIT
+LazyData: true
+URL: https://github.com/XXX/ecomodTemplate/
+
+
