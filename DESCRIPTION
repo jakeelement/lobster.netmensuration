@@ -9,14 +9,15 @@ Description: This project interacts with the functionality of ecomod and
   and Marport data are supported.
 Depends: R (>= 3.0.0)
 Imports: 
+  devtools,
   ecomodUtils,
   INLA,
   lubridate,
   Matrix
 Suggests:
+  groundfish,
   sp,
-  splines,
-  groundfish
+  splines
 License: MIT
 LazyData: true
 URL: https://github.com/jae0/netmensuration/
