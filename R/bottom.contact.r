@@ -1,7 +1,7 @@
 
 bottom.contact = function( x, bcp, debugrun=FALSE ) {
 
-  require(lubridate)
+  # require(lubridate)
   # require( numDeriv )
 
   if (debugrun) {
