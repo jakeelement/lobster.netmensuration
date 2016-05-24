@@ -1,8 +1,8 @@
 
 bottom.contact = function( x, bcp, debugrun=FALSE ) {
 
-  #require(lubridate)
-  #require( numDeriv )
+  require(lubridate)
+  # require( numDeriv )
 
   if (debugrun) {
     debug.plot = TRUE
