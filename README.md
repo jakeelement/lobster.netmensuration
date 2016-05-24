@@ -7,7 +7,7 @@ Installation:
 ```
 install.packages( "devtools", ask=F, dependencies=TRUE )   
 require( "devtools") 
-install_github( "jae0/ecomodUtils" )
+install_github( "jae0/netmensuration" )
 ```
 
 Setup environment: https://github.com/jae0/ecomodUtils
