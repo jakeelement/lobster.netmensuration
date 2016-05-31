@@ -8,7 +8,7 @@ look.for.multiple.sets = function( x,  tdiff.min=20 ) {
   if (0) {
     tzone="UTC"
     yr=2009
-    fn="/home/jae/ecomod/groundfish/data/nets/Scanmar/datalogs/2009/2009-Aug20-024348.SET.LOG"
+    fn="/home/jae/bio/groundfish/data/nets/Scanmar/datalogs/2009/2009-Aug20-024348.SET.LOG"
     x = load.scanmar.rawdata( fn, yr=yr)
      threshold.depth=20  
     tdiff.min=20 

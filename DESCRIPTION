@@ -1,16 +1,16 @@
 Package: netmensuration
-Title: Package that interacts with ecomod and associated projects to 
+Title: Package that interacts with bio and associated projects to 
   handle net mensuration data streams
 Version: 0.1
-Authors@R: c( person("Jae", "Choi", email="jae.choi@dfo-mpo.gc.ca", role=c("aut", "cre")) ) 
-Description: This project interacts with the functionality of ecomod and 
+Authors@R: c( person("Jae", "Choi", email="choijaeseok@gmail.com", role=c("aut", "cre")) ) 
+Description: This project interacts with the functionality of bio and 
   associated projects to handle net mensuration data streams and compute 
   a few useful statistics. Currently, Netmind, Seabird, Minilog, Scanmar 
   and Marport data are supported.
 Depends: R (>= 3.0.0)
 Imports: 
   devtools,
-  ecomodUtils,
+  bio.base,
   INLA,
   lubridate,
   Matrix
