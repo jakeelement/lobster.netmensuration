@@ -5,7 +5,7 @@ bottom.contact.incremental = function( sm, bcp=bcp )  {
  stop( "Not working well enough for full time use")
 
   if(0) {
-    load("~/bio/groundfish/data/nets/Scanmar/bottom.contact/results/bc.NED2014102.8.rdata")
+    load("~/bio.groundfish/data/nets/Scanmar/bottom.contact/results/bc.NED2014102.8.rdata")
     sm =data.frame( Z=bc$Z)
     sm$timestamp=bc$timestamp
     sm$ts=bc$ts
