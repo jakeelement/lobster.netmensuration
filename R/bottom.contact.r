@@ -1,8 +1,9 @@
 
 bottom.contact = function( x, bcp, debugrun=FALSE ) {
 
-  # require(lubridate)
-  # require( numDeriv )
+  # all timestamps must be in Posix/UTC
+  # range comparisons seem to fail when they are not
+  tzone = "UTC"
 
   if (debugrun) {
     debug.plot = TRUE
@@ -401,11 +402,9 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
   bcm0 = paste(bcmethods, "0", sep="")
   bcm1 = paste(bcmethods, "1", sep="")
 
-  tzone = tz (x$timestamp[1] )
-
   # recovert to time zone of incoming data as time zone is lost with the transpose
-  tmp0 = ymd_hms( t( as.data.frame(O[ bcm0 ]) ), tz=tzone )
-  tmp1 = ymd_hms( t( as.data.frame(O[ bcm1 ]) ), tz=tzone )
+  tmp0 = ymd_hms( t( as.data.frame(O[ bcm0 ]) ) )  # UTC
+  tmp1 = ymd_hms( t( as.data.frame(O[ bcm1 ]) ) )  # UTC
 
   bottom0.mean =  mean(tmp0, na.rm=TRUE)
   bottom1.mean =  mean(tmp1, na.rm=TRUE)
@@ -508,6 +507,11 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
   }
   O$res = data.frame( cbind(z=O$depth.mean, t=tmean, zsd=O$depth.sd, tsd=tmeansd,
                             n=O$depth.n, t0=O$bottom0, t1=O$bottom1, dt=O$bottom.diff ) ) # this is really for the snow crab system
+
+  # time format / zone gets reset ..
+  O$res$t0 = as.POSIXct( O$res$t0, origin=lubridate::origin, tz="UTC" )
+  O$res$t1 = as.POSIXct( O$res$t1, origin=lubridate::origin, tz="UTC" )
+  O$res$dt = O$res$t1 - O$res$t0
 
   if(debug.plot) {
     trange = range( x$ts[O$good], na.rm=TRUE )
