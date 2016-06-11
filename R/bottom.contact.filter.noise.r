@@ -31,7 +31,11 @@ bottom.contact.filter.noise = function( x, good, bcp, debug=FALSE ) {
   }
 
   aoi = min( mm.aoi ) : max( mm.aoi )
-  if (length( aoi) < 30 ) return (NULL)
+  if (length( aoi) < 30 ) {
+    y = NA
+    class( y) = "try-error"
+    return (y)
+  }
 
   # 2. focus upon aoi: identify data that are likely noise and mark them
   #  filter localized (adjacent) deviations
