@@ -94,7 +94,7 @@ load.scanmar.rawdata = function( fn, yr=NULL ) {
 
   scanmar$timestamp= paste(yr0, mon, day, scanmar$time, sep="-" )
   scanmar$timestamp=gsub(":","-",scanmar$timestamp)
-  scanmar$timestamp = lubridate::ymd_hms(scanmar$timestamp) # Scanmar is always UTC!!! .. which is the default of ymd_hms
+  scanmar$timestamp = lubridate::ymd_hms(scanmar$timestamp, tz="UTC" ) # Scanmar is always UTC!!! .. which is the default of ymd_hms
 
   scanmar$nm_id = basename(fn)
 

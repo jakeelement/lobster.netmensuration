@@ -1,6 +1,6 @@
 
 
-load.marport.rawdata = function( fnroot, fncfg, tzone="America/Halifax" ) {
+load.marport.rawdata = function( fnroot, fncfg ) {
 
   require(lubridate)
   if (FALSE) {
@@ -90,10 +90,13 @@ load.marport.rawdata = function( fnroot, fncfg, tzone="America/Halifax" ) {
   marport = marport[, outputvnames]
   marportId = paste( marport$Vessel, marport$Cruise, marport$set )
 
-  marport$timestamp = mdy_hms( marport$timestamp ) ## need to check if mdy or dmy ...
-  dlog$timestamp = mdy_hms(dlog$timestamp)
-  tz(marport$timestamp) = tzone
-  tz(dlog$timestamp) = tzone
+  tzone="America/Halifax"
+  marport$timestamp = mdy_hms( marport$timestamp, tz=tzone ) ## need to check if mdy or dmy ...
+  dlog$timestamp = mdy_hms(dlog$timestamp, tz=tzone )
+
+  # convert to internal TZ
+  marport$timestamp = with_tz(marport$timestamp, "UTC")
+  dlog$timestamp = with_tz(dlog$timestamp, "UTC" )
 
     threshold.seconds = 1*60*60 # 1hr in seconds
     nmids = unique( marportId )
