@@ -83,6 +83,8 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
     }
   }
 
+  if ( sd(x$depth, na.rm=TRUE) < bcp$eps.depth ) return(NULL)  # not enough variability in data
+
   ## SANITY CHECKS
   # sometimes multiple tows exist in one track ...
   # over-smooth depth to capture strange tows
@@ -134,6 +136,7 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
   x$depth[ todrop ] = NA
   O$good[ todrop] = FALSE
 
+  if ( sd(x$depth, na.rm=TRUE) < bcp$eps.depth ) return(NULL)  # not enough variability in data
 
   ## ------------------------------
   ## MAIN NOISE/INTERPOLATION FILTER
@@ -167,6 +170,8 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
 
   if(sum(x$depth-min(x$depth,na.rm=T),na.rm=T)==0) return( NULL )
   if(sum(O$good)==0) return( NULL )
+  if (sd(x$depth, na.rm=TRUE) < bcp$eps.depth ) return(NULL)  # not enough variability in data
+  if (sd(x$depth.smoothed, na.rm=TRUE) < bcp$eps.depth ) return(NULL)  # not enough variability in data
 
   x.timerange = range( x$timestamp[O$good], na.rm=TRUE )
   x.dt = difftime( x.timerange[2], x.timerange[1], units="mins" )
