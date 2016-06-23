@@ -83,7 +83,10 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
     }
   }
 
-  if ( sd(x$depth, na.rm=TRUE) < bcp$eps.depth ) return(NULL)  # not enough variability in data
+  if ( sd(x$depth, na.rm=TRUE) < bcp$eps.depth ) {
+    O$error.flag = "not enough variability in data?"
+    return(O)
+  }
 
   ## SANITY CHECKS
   # sometimes multiple tows exist in one track ...
@@ -144,17 +147,18 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
 
   res = NULL
   res = try( bottom.contact.filter.noise ( x=x, good=O$good, bcp=bcp, debug=debugrun ), silent =TRUE )
-  if ( "try-error" %in% class(res) ) {
+  if ( "try-error" %in% class(res) | is.null(res$depth.smoothed) ) {
     x$depth = jitter( x$depth )
     res = try( bottom.contact.filter.noise ( x=x, good=O$good, bcp=bcp, debug=debugrun ), silent =TRUE )
   }
 
   if ( !"try-error" %in% class(res) ) {
-    if ( cor( x$depth, res$depth.smoothed, use="pairwise.complete.obs") > 0.999 ) {
-      bcp$noisefilter.target.r2 = bcp$noisefilter.target.r2 - 0.1
-      x$depth = jitter( x$depth )
-      res = try( bottom.contact.filter.noise ( x=x, good=O$good, bcp=bcp, debug=debugrun ), silent =TRUE )
-  }}
+    if (!is.null(res$depth.smoothed)) {
+      if ( cor( x$depth, res$depth.smoothed, use="pairwise.complete.obs") > 0.999 ) {
+        bcp$noisefilter.target.r2 = bcp$noisefilter.target.r2 - 0.1
+        x$depth = jitter( x$depth )
+        res = try( bottom.contact.filter.noise ( x=x, good=O$good, bcp=bcp, debug=debugrun ), silent =TRUE )
+  }}}
 
   x$depth.smoothed = x$depth
   if ( ! "try-error" %in% class( res) )  {
@@ -165,7 +169,7 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
     igg = ig[1]:ig[2]
     O$good[igg] = res$good[igg]
     x$depth[ !O$good ] = NA
-    x$depth.smoothed= res$depth.smoothed
+    if (!is.null(res$depth.smoothed)) x$depth.smoothed= res$depth.smoothed
   }
 
   if(sum(x$depth-min(x$depth,na.rm=T),na.rm=T)==0) return( NULL )
