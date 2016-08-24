@@ -88,7 +88,7 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
     return(O)
   }
 
-  ## SANITY CHECKS
+  ## inSANITY CHECKS
   # sometimes multiple tows exist in one track ...
   # over-smooth depth to capture strange tows
   x$dsm = interpolate.xy.robust( x[, c("ts", "depth")], method="sequential.linear", trim=0.05 )
@@ -144,17 +144,16 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
   ## ------------------------------
   ## MAIN NOISE/INTERPOLATION FILTER
   # Some filtering of noise from data and further focus upon area of interest based upon time and depth if possible
-
   res = NULL
   res = try( bottom.contact.filter.noise ( x=x, good=O$good, bcp=bcp, debug=debugrun ), silent =TRUE )
-  if ( "try-error" %in% class(res) | is.null(res$depth.smoothed) ) {
+  if ( "try-error" %in% class(res) || is.null(res$depth.smoothed) ) {
     x$depth = jitter( x$depth )
     res = try( bottom.contact.filter.noise ( x=x, good=O$good, bcp=bcp, debug=debugrun ), silent =TRUE )
   }
 
   if ( !"try-error" %in% class(res) ) {
     if (!is.null(res$depth.smoothed)) {
-      if ( cor( x$depth, res$depth.smoothed, use="pairwise.complete.obs") > 0.999 ) {
+      if ( cor( x$depth, res$depth.smoothed, use="pairwise.complete.obs") > 0.999 || is.na(cor( x$depth, res$depth.smoothed, use="pairwise.complete.obs") )) {
         bcp$noisefilter.target.r2 = bcp$noisefilter.target.r2 - 0.1
         x$depth = jitter( x$depth )
         res = try( bottom.contact.filter.noise ( x=x, good=O$good, bcp=bcp, debug=debugrun ), silent =TRUE )
