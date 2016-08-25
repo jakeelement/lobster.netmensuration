@@ -246,6 +246,7 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
   res = NULL
   res = try( bottom.contact.modal( sm=sm0, bcp ), silent=TRUE )
     if ( ! "try-error" %in% class( res) ) {
+      #browser()
       if (exists( "bc0", res )) {
       if ( all(is.finite( c(res$bc0, res$bc1 )) ) ) {
         DT =  abs( as.numeric( difftime( res$bc0, res$bc1, units="mins" ) ) )
