@@ -396,7 +396,20 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
     O$manual.method1 = x$timestamp[u.ts1]
     O$manual.method.indices = which( x$timestamp >= O$manual.method0 &  x$timestamp <= O$manual.method1 )
   }
-
+  if (!is.null(bcp$from.manual.archive)) {
+     print( "Loading values from previously generated .csv")
+     manualclick = read.csv(file.path(bcp$from.manual.archive, paste("clicktouchdown_final_", bcp$YR, ".csv", sep = "")))
+     station = unlist(strsplit(x[grep("uid", names(x))][1,], "\\."))[4]
+     sta.ind = which(manualclick$station == station)
+     if(length(sta.ind == 1)){
+       mm0 = mdy_hms(manualclick$start[sta.ind], tz = "UTC")
+       O$manual.method0 =format(mm0, tz = "America/Halifax")
+           
+       mm1 = mdy_hms(manualclick$end[sta.ind], tz = "UTC")
+       O$manual.method1 =format(mm1, tz = "America/Halifax")
+       
+     }
+  }
 
   O$means0 = NA  ### NOTE:: using the 'c' operator on posix strips out the timezone info! this must be retained
   O$means1 = NA  ### NOTE:: using the 'c' operator on posix strips out the timezone info! this must be retained
