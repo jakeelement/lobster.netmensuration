@@ -63,7 +63,7 @@ bottom.contact.incremental = function( sm, bcp=bcp )  {
     points(Z.cleaned~ts,sm, col="red", pch=20)
     abline( v=sm$ts[ c(i0, i1) ], col="blue" )
 
-    x11()
+    plot.new()
     plot(slope~ts, sm, pch=20, col="green" )
     abline( h=slope.modes, col="red" )
     abline( v=sm$ts[ c(i0, i1) ], col="blue" )

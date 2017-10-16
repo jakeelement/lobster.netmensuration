@@ -112,7 +112,7 @@ bottom.contact.plot = function ( O, netspread=FALSE ) {
    
     if ( !( is.null( legendtext)))  legend( "top", legend=legendtext, col=legendcol, pch=legendpch )
      
-    #x11(); plot( slopes ~ ts, x2 )
+    #plot.new(); plot( slopes ~ ts, x2 )
     lines( O$depth.smoothed ~ x$ts, col="brown" )
     # points( depth0~ts, x[!O$good,], col="red", cex=1 )   ## points dropped from filters
     
@@ -126,7 +126,7 @@ bottom.contact.plot = function ( O, netspread=FALSE ) {
 
     if (netspread & !is.na(O$surface.area) ) {
       
-      x11()
+      plot.new()
       par(mfrow=c(2,2))
       bts = O$ts[ O$bottom.contact ] 
 
