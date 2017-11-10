@@ -10,12 +10,12 @@ Description: This project interacts with the functionality of bio and
 Depends: R (>= 3.0.0)
 Imports: 
   devtools,
-  bio.base,
+  emenv,
   INLA,
   lubridate,
   Matrix
 Suggests:
-  groundfish,
+  bio.groundfish,
   sp,
   splines
 License: MIT
