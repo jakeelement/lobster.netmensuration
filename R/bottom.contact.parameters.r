@@ -46,7 +46,7 @@
     if ( !exists("linear.filter.quants", bcp)) bcp$linear.filter.quants = c(0.05, 0.95) # as above
 
     if ( !exists("user.interaction", bcp)) bcp$user.interaction=FALSE  # if you want to try to manually determine end points too
-    if ( !exists("from.manual.archive", bcp))bcp$from.manual.archive = file.path(data_root, "bio.snowcrab", "data", "touchdown" )
+    if ( !exists("from.manual.archive", bcp)) bcp$from.manual.archive = project.datadirectory("bio.snowcrab", "data", "touchdown" )
 
     return(bcp)
 
