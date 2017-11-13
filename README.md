@@ -10,7 +10,7 @@ require( "devtools")
 install_github( "jae0/netmensuration" )
 ```
 
-Setup environment: https://github.com/jae0/stmenv
+Setup environment: https://github.com/jae0/emaf_base
 
 External dependency: INLA ( http://www.r-inla.org/download )
 
