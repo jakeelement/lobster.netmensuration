@@ -10,7 +10,7 @@ Description: This project interacts with the functionality of bio and
 Depends: R (>= 3.0.0)
 Imports: 
   devtools,
-  emaf.base,
+  aegis.env,
   INLA,
   lubridate,
   Matrix
