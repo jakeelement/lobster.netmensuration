@@ -9,9 +9,9 @@
 # created to use mouse to choose file and run etc ... be my guest .. :)
 
 # set up libs and bio functions
-p = load.groundfish.environment()
+p = groundfish.parameters()
 
-datadir = file.path( project.datadirectory("bio.groundfish"), "data", "nets", "Scanmar", "datalogs", "2015", "NED2015002" )  # storage location
+datadir = file.path( project.datadirectory("aegis"), "data", "nets", "Scanmar", "datalogs", "2015", "NED2015002" )  # storage location
 fn = "NED2015002.028.2015-Mar21-162742.SET.LOG" # filename of data file to examine
 fl = file.path( datadir, fn)
 rawdata = load.scanmar.rawdata( fl )
@@ -26,9 +26,9 @@ str(bc)
 ### -- example usage directly upon a a directory of scanmar data
 ### -----------------------------------------------------------------------
 
-p = load.groundfish.environment()
+p = groundfish.parameters()
 
-datadir = file.path( project.datadirectory("bio.groundfish"), "data", "nets", "Scanmar", "datalogs", "2014" )  # storage location for raw data logs
+datadir = file.path( project.datadirectory("aegis"), "data", "nets", "Scanmar", "datalogs", "2014" )  # storage location for raw data logs
 fn.base = "basedata.rdata"  # storage of outputs
 fn.meta = "metadata.rdata"
 

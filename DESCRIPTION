@@ -15,7 +15,7 @@ Imports:
   lubridate,
   Matrix
 Suggests:
-  bio.groundfish,
+  aegis,
   sp,
   splines
 License: MIT
