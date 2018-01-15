@@ -398,7 +398,7 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
   }
   if (!is.null(bcp$from.manual.archive)) {
      print( "Loading values from previously generated .csv")
-     manualclick = read.csv(file.path(bcp$from.manual.archive, paste("clicktouchdown_final_", bcp$YR, ".csv", sep = "")))
+     manualclick = read.csv(file.path(bcp$from.manual.archive, "results", paste("clicktouchdown_final_", bcp$YR, ".csv", sep = "")))
      station = unlist(strsplit(bcp$id, "\\."))[4]
      sta.ind = which(manualclick$station == station)
      if(length(sta.ind == 1)){
