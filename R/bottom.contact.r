@@ -262,6 +262,8 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
   if(debug.plot) {
     trange = range( x$ts[O$good], na.rm=TRUE )
     drange = c( quantile( x$depth, c(0.05, 0.975), na.rm=TRUE) , median( x$depth, na.rm=TRUE ) * 1.05 )
+    #BC - Plots fail in RStudio graphics device, add clause
+    dev.new(noRStudioGD = FALSE)
     plot(depth~ts, x, ylim=c(drange[2],drange[1]), xlim=c(trange[1],trange[2]), pch=20, cex=0.1, col="gray" )
     mcol = "green"
     points( depth~ts, x[ O$modal.method.indices, ], pch=20, col=mcol, cex=0.2)
@@ -297,6 +299,8 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
   if(debug.plot) {
     trange = range( x$ts[O$good], na.rm=TRUE )
     drange = c( quantile( x$depth, c(0.05, 0.975), na.rm=TRUE) , median( x$depth, na.rm=TRUE ) * 1.05 )
+    #BC - Plots fail in RStudio graphics device, add clause
+    dev.new(noRStudioGD = FALSE)
     plot(depth~ts, x, ylim=c(drange[2],drange[1]), xlim=c(trange[1],trange[2]), pch=20, cex=0.1, col="gray" )
     mcol = "blue"
     points( depth~ts, x[ O$smooth.method.indices, ], pch=20, col=mcol, cex=0.2)
@@ -333,6 +337,8 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
   if(debug.plot) {
     trange = range( x$ts[O$good], na.rm=TRUE )
     drange = c( quantile( x$depth, c(0.05, 0.975), na.rm=TRUE) , median( x$depth, na.rm=TRUE ) * 1.05 )
+    #BC - Plots fail in RStudio graphics device, add clause
+    dev.new(noRStudioGD = FALSE) 
     plot(depth~ts, x, ylim=c(drange[2],drange[1]), xlim=c(trange[1],trange[2]), pch=20, cex=0.1, col="gray" )
     mcol = "yellow"
     points( depth~ts, x[ O$maxdepth.method.indices, ], pch=20, col=mcol, cex=0.2)
@@ -372,6 +378,8 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
   if(debug.plot) {
     trange = range( x$ts[O$good], na.rm=TRUE )
     drange = c( quantile( x$depth, c(0.05, 0.975), na.rm=TRUE) , median( x$depth, na.rm=TRUE ) * 1.05 )
+    #BC - Plots fail in RStudio graphics device, add clause
+    dev.new(noRStudioGD = FALSE)
     plot(depth~ts, x, ylim=c(drange[2],drange[1]), xlim=c(trange[1],trange[2]), pch=20, cex=0.1, col="gray" )
     mcol = "red"
     points( depth~ts, x[ O$linear.method.indices, ], pch=20, col=mcol, cex=0.2)
@@ -383,9 +391,16 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
   O$manual.method0 = NA #### NOTE:: using the 'c' operator on posix strips out the timezone info! this must be retained
   O$manual.method1 = NA  ### NOTE:: using the 'c' operator on posix strips out the timezone info! this must be retained
   if ( bcp$user.interaction  ) {
+    #BC todo- Make this method more robust, make similar to plot found in bottom.contact.plot with more
+    #         sensor outputs for guidance. Also include user prompts 
+    
+    #BC todo- Add options for writing and overwritting to manual archive so that re-runs do not need to re-click.  
+    
     print( "Click with left mouse on start and stop locations and then press ESC or right click to continue.")
     trange = range( x$ts[O$good], na.rm=TRUE )
     drange = c( quantile( x$depth, c(0.05, 0.975), na.rm=TRUE) , median( x$depth, na.rm=TRUE ) * 1.05 )
+    #BC - Plots fail in RStudio graphics device, add clause
+    dev.new(noRStudioGD = FALSE)
     plot(depth~ts, x, ylim=c(drange[2],drange[1]), xlim=c(trange[1],trange[2]), pch=20, cex=0.1, col="gray" )
     points( depth~ts, x[O$good,], pch=20, col="orange", cex=0.2)
 
@@ -396,7 +411,8 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
     O$manual.method1 = x$timestamp[u.ts1]
     O$manual.method.indices = which( x$timestamp >= O$manual.method0 &  x$timestamp <= O$manual.method1 )
   }
-  if (!is.null(bcp$from.manual.archive)) {
+  #BC- Added condition incase user interaction is desired, do not want to overwrite user input with archive data. 
+  if (!is.null(bcp$from.manual.archive) && !bcp$user.interaction) {
      print( "Loading values from previously generated .csv")
      manualclick = read.csv(file.path(bcp$from.manual.archive, paste("clicktouchdown_final_", bcp$YR, ".csv", sep = "")), as.is=TRUE)
      station = unlist(strsplit(bcp$id, "\\."))[4]
@@ -538,6 +554,8 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
   if(debug.plot) {
     trange = range( x$ts[O$good], na.rm=TRUE )
     drange = c( quantile( x$depth, c(0.05, 0.975), na.rm=TRUE) , median( x$depth, na.rm=TRUE ) * 1.05 )
+    #BC - Plots fail in RStudio graphics device, add clause
+    dev.new(noRStudioGD = FALSE)
     plot(depth~ts, x, ylim=c(drange[2],drange[1]), xlim=c(trange[1],trange[2]), pch=20, cex=0.1, col="gray" )
     mcol = "yellow"
     points( depth~ts, x[ O$maxdepth.method.indices, ], pch=20, col=mcol, cex=0.2)

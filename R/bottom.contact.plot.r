@@ -5,6 +5,8 @@ bottom.contact.plot = function ( O, netspread=FALSE ) {
     x = O$plotdata
     trange = range( x$ts, na.rm=TRUE )
     drange = range( x$depth, na.rm=TRUE) 
+    #BC - Plots fail in RStudio graphics device, add clause
+    dev.new(noRStudioGD = FALSE)
     plot(depth~ts, x, ylim=c(drange[2] +2.5, drange[1] -5), xlim=c(trange[1]-20,trange[2]+20), type="p", pch=".", col="black", cex=2 )
     title( sub=paste(O$id, O$error.flag) ) 
     return() 
@@ -17,6 +19,8 @@ bottom.contact.plot = function ( O, netspread=FALSE ) {
     if (length( which (is.finite( dtrg))) == 0 ) dtrg = O$good
     trange = range( x$ts[dtrg], na.rm=TRUE )
     drange = range( O$depth.smoothed[dtrg], na.rm=TRUE) 
+    #BC - Plots fail in RStudio graphics device, add clause
+    dev.new(noRStudioGD = FALSE)
     plot(depth~ts, x, ylim=c(drange[2] + 5, drange[1] -10 ), xlim=c(trange[1]-60,trange[2]+60), type="n", xlab="" )
     legendtext = NULL
     legendcol = NULL
@@ -125,8 +129,8 @@ bottom.contact.plot = function ( O, netspread=FALSE ) {
       "; signal=", signif(O$signal2noise, 3) , sep="")  )
 
     if (netspread & !is.na(O$surface.area) ) {
-      
-      plot.new()
+      #BC - Plots fail in RStudio graphics device, add clause
+      dev.new(noRStudioGD = FALSE)
       par(mfrow=c(2,2))
       bts = O$ts[ O$bottom.contact ] 
 
