@@ -12,7 +12,8 @@ Imports:
   devtools,
   aegis.env,
   lubridate,
-  Matrix
+  Matrix,
+  tcltk
 Suggests:
   aegis,
   INLA,
@@ -21,5 +22,3 @@ Suggests:
 License: MIT
 LazyData: true
 URL: https://github.com/jae0/netmensuration/
-
-

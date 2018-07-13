@@ -1,6 +1,10 @@
-
+#' @title  bottom.contact
+#' @description  Calculates indicies of touchdown and liftoff
+#' @import tcltk
+#' @return dataframe with various results
+#' @export
 bottom.contact = function( x, bcp, debugrun=FALSE ) {
-
+require(tcltk)
   # all timestamps must be in Posix/UTC
   # range comparisons seem to fail when they are not
   tzone = "UTC"
@@ -263,7 +267,7 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
     trange = range( x$ts[O$good], na.rm=TRUE )
     drange = c( quantile( x$depth, c(0.05, 0.975), na.rm=TRUE) , median( x$depth, na.rm=TRUE ) * 1.05 )
     #BC - Plots fail in RStudio graphics device, add clause
-    dev.new(noRStudioGD = FALSE)
+    dev.new(noRStudioGD = TRUE)
     plot(depth~ts, x, ylim=c(drange[2],drange[1]), xlim=c(trange[1],trange[2]), pch=20, cex=0.1, col="gray" )
     mcol = "green"
     points( depth~ts, x[ O$modal.method.indices, ], pch=20, col=mcol, cex=0.2)
@@ -300,7 +304,7 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
     trange = range( x$ts[O$good], na.rm=TRUE )
     drange = c( quantile( x$depth, c(0.05, 0.975), na.rm=TRUE) , median( x$depth, na.rm=TRUE ) * 1.05 )
     #BC - Plots fail in RStudio graphics device, add clause
-    dev.new(noRStudioGD = FALSE)
+    dev.new(noRStudioGD = TRUE)
     plot(depth~ts, x, ylim=c(drange[2],drange[1]), xlim=c(trange[1],trange[2]), pch=20, cex=0.1, col="gray" )
     mcol = "blue"
     points( depth~ts, x[ O$smooth.method.indices, ], pch=20, col=mcol, cex=0.2)
@@ -338,7 +342,7 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
     trange = range( x$ts[O$good], na.rm=TRUE )
     drange = c( quantile( x$depth, c(0.05, 0.975), na.rm=TRUE) , median( x$depth, na.rm=TRUE ) * 1.05 )
     #BC - Plots fail in RStudio graphics device, add clause
-    dev.new(noRStudioGD = FALSE) 
+    dev.new(noRStudioGD = TRUE) 
     plot(depth~ts, x, ylim=c(drange[2],drange[1]), xlim=c(trange[1],trange[2]), pch=20, cex=0.1, col="gray" )
     mcol = "yellow"
     points( depth~ts, x[ O$maxdepth.method.indices, ], pch=20, col=mcol, cex=0.2)
@@ -379,7 +383,7 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
     trange = range( x$ts[O$good], na.rm=TRUE )
     drange = c( quantile( x$depth, c(0.05, 0.975), na.rm=TRUE) , median( x$depth, na.rm=TRUE ) * 1.05 )
     #BC - Plots fail in RStudio graphics device, add clause
-    dev.new(noRStudioGD = FALSE)
+    dev.new(noRStudioGD = TRUE)
     plot(depth~ts, x, ylim=c(drange[2],drange[1]), xlim=c(trange[1],trange[2]), pch=20, cex=0.1, col="gray" )
     mcol = "red"
     points( depth~ts, x[ O$linear.method.indices, ], pch=20, col=mcol, cex=0.2)
@@ -394,22 +398,189 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
     #BC todo- Make this method more robust, make similar to plot found in bottom.contact.plot with more
     #         sensor outputs for guidance. Also include user prompts 
     
-    #BC todo- Add options for writing and overwritting to manual archive so that re-runs do not need to re-click.  
     
-    print( "Click with left mouse on start and stop locations and then press ESC or right click to continue.")
-    trange = range( x$ts[O$good], na.rm=TRUE )
-    drange = c( quantile( x$depth, c(0.05, 0.975), na.rm=TRUE) , median( x$depth, na.rm=TRUE ) * 1.05 )
-    #BC - Plots fail in RStudio graphics device, add clause
-    dev.new(noRStudioGD = FALSE)
-    plot(depth~ts, x, ylim=c(drange[2],drange[1]), xlim=c(trange[1],trange[2]), pch=20, cex=0.1, col="gray" )
-    points( depth~ts, x[O$good,], pch=20, col="orange", cex=0.2)
+    satisified = F
+    while(!satisified){
+    
+    #open plot window, user can modify the numbers to fit their screen
+    x11(25, 15)
+    
+    
+    #Define Margins for multiple y-axis
+    par(mar=c(5, 8, 4, 4) + 0.1)
+    
+    grange = min(which(O$good)):max(which(O$good))
+    print(O$plotdata$wingspread[grange])
+    #Plot the door spread
+    plot(O$plotdata$timestamp[grange], O$plotdata$wingspread[grange], axes=F, ylim=c(min(O$plotdata$wingspread[grange], na.rm = TRUE)-1,max(O$plotdata$wingspread[grange], na.rm = TRUE)+1), xlab="", ylab="",type="p",col="blue", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
+    smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], spar=.5)
+    lines(smoothingSpline, col="blue") 
+    abline( h = c(median(O$plotdata$wingspread[grange], na.rm = TRUE)), col = "blue", lty =2 )
+    axis(2,col="blue", col.lab = "blue", col.axis = "blue", lwd=1)
+    mtext(2,text="Wing Spread",col = "blue",line=2)
+    
+    
+    #Plot the opening 
+    par(new=T)
+    plot(O$plotdata$timestamp[grange], O$plotdata$opening[grange], axes=F, ylim=c(min(O$plotdata$opening[grange], na.rm = TRUE)-1,max(O$plotdata$opening[grange], na.rm = TRUE)+1), xlab="", ylab="",type="p",col="brown", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
+    smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], spar=.5)
+    lines(smoothingSpline, col="brown") 
+    axis(2, ylim=c(min(O$plotdata$opening[grange]),max(O$plotdata$opening[grange])),col = "brown",col.lab = "brown", col.axis = "brown",lwd=1,line=3.5)
+    mtext(2,text="Opening", col = "brown", line=5.5)
+    
+    #Plot the depth (Clickable)
+    par(new=T)
+    plot(O$plotdata$timestamp[grange], O$plotdata$depth[grange], axes=F, ylim=rev(c(min(O$plotdata$depth[grange], na.rm = TRUE)-1,max(O$plotdata$depth[grange], na.rm = TRUE)+1)), xlab="", ylab="", type="l", main=O$id,xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])),lwd=1)
+    axis(4, ylim=rev(c(min(O$plotdata$depth[grange], na.rm = TRUE)-1,max(O$plotdata$depth[grange], na.rm = TRUE)+1)),lwd=1)
+    mtext(4,text="Depth", line = 2)
+    
+    #Set up time axis plotting
+    abli = seq(O$plotdata$timestamp[grange][1],O$plotdata$timestamp[grange][length(O$plotdata$timestamp[grange])], "1 min")
+    
+    #Draw the time axis
+    axis.POSIXct(1, at = abli, format = "%H:%M:%S", labels = TRUE)
+    mtext(unique(date(abli)),side=1,col="black",line=2)
+    abline( v = abli, col = "lightgrey")
+    
+    
+    #Visualize neutral haulback
+    #Find positions of going backward toward origin. Nuetral haulback
+    disfromorigin = rep(0, 1, length(O$plotdata$latitude[grange]))
+    for(k in 1:(length(O$plotdata$latitude[grange])-1)){
+      p1 = c(O$plotdata$longitude[grange][1],O$plotdata$latitude[grange][1])
+      p2 = c(O$plotdata$longitude[grange][k+1],O$plotdata$latitude[grange][k+1])
+      disfromorigin[k+1] = distHaversine(p1 , p2, r=6378137)
+    }
+    neu = rep(0, 1, length(O$plotdata$latitude[grange]))
+    for(k in 1:(length(disfromorigin)-1)){
+      neu[k] = disfromorigin[k+1]-disfromorigin[k]    
+      if(k > 1){
+        if(neu[k-1]<0 & neu[k]>=0) neu[k-1] = 0
+      }
+    }
 
-    useridentified = locator( n=2, type="o", col="cyan")
-    u.ts0 = which.min( abs( x$ts-useridentified$x[1] ))
-    u.ts1 = which.min( abs( x$ts-useridentified$x[2] ))
-    O$manual.method0 = x$timestamp[u.ts0]
-    O$manual.method1 = x$timestamp[u.ts1]
-    O$manual.method.indices = which( x$timestamp >= O$manual.method0 &  x$timestamp <= O$manual.method1 )
+    neuhaul = F
+    indn = which(neu < 0)
+    if(length(indn) > 10){
+      print(paste("Neutral Haulback! ", O$id))
+      neuhaul = T
+    }
+  
+    if(length(indn)>0){
+      abline(v = O$plotdata$timestamp[grange][indn], col = "red")
+    }
+    
+    id = identify(O$plotdata$timestamp[grange], O$plotdata$depth[grange], labels = c(as.character(O$plotdata$timestamp[grange])),n = 1, pos = TRUE)
+    start = O$plotdata$timestamp[grange][id$ind]
+    points(O$plotdata$timestamp[grange][id$ind], O$plotdata$depth[grange][id$ind], col = "darkgreen", pch = 19)
+    #Code that allow identifying clicks
+    id2 = identify(O$plotdata$timestamp[grange], O$plotdata$depth[grange], labels = c(as.character(O$plotdata$timestamp[grange])),n = 1, pos = TRUE)
+    end = O$plotdata$timestamp[grange][id2$ind]
+    points(O$plotdata$timestamp[grange][id2$ind], O$plotdata$depth[grange][id2$ind], col = "darkgreen", pch = 19)
+    
+    ##Code taken from bottom.contact.plot.r
+    legendtext = NULL
+    legendcol = NULL
+    legendpch = NULL
+    if (all(is.finite(c( O$variance.method0, O$variance.method1) ) ) ) {
+      mcol = "pink"
+      # points( depth~ts, x[ O$variance.method.indices, ], pch=20, col=mcol, cex=0.2)
+      abline (v=O$plotdata$timestamp[min(O$variance.method.indices)], col=mcol, lty="solid", lwd=1.2)
+      abline (v=O$plotdata$timestamp[max(O$variance.method.indices)], col=mcol, lty="solid", lwd=1.2)
+      DT = as.numeric( difftime( O$variance.method1, O$variance.method0, units="mins" ) )
+      legendtext = c( legendtext, paste( "variance gate:   ", round( DT, 2), "" ) )
+      legendcol = c( legendcol, mcol)
+      legendpch =c( legendpch, 20 ) 
+    }
+    
+    
+    if (all(is.finite( c(O$modal.method0, O$modal.method1 ) ) ) ) {
+      mcol = "red" # colour for plotting
+      # points( depth~ts, x[O$modal.method.indices,], col=mcol, pch=20, cex=0.2)       
+      abline (v=O$plotdata$timestamp[min(O$modal.method.indices)], col=mcol, lty="dashed")
+      abline (v=O$plotdata$timestamp[max(O$modal.method.indices)], col=mcol, lty="dashed")
+      DT = as.numeric( difftime( O$modal.method1, O$modal.method0, units="mins" ) )
+      legendtext = c( legendtext, paste( "modal:   ", round( DT, 2) ) )
+      legendcol = c( legendcol, mcol)
+      legendpch =c( legendpch, 20) 
+    }
+    
+    
+    if ( all(is.finite( c( O$smooth.method0,  O$smooth.method1) ) ) ) {
+      mcol = "blue"
+      # points( depth~ts, x[O$smooth.method.indices,], col=mcol, pch=20, cex=0.2)   
+      abline (v=O$plotdata$timestamp[min(O$smooth.method.indices)], col=mcol, lty="dotdash", lwd=1.5)
+      abline (v=O$plotdata$timestamp[max(O$smooth.method.indices)], col=mcol, lty="dotdash", lwd=1.5)
+      DT = as.numeric( difftime( O$smooth.method1, O$smooth.method0, units="mins" ) )
+      legendtext = c(legendtext, paste( "smooth:   ", round(DT, 2)) )
+      legendcol = c( legendcol, mcol)
+      legendpch =c( legendpch, 20) 
+    }
+    
+    if (all(is.finite( c(O$linear.method0, O$linear.method1)  )) ) {
+      mcol ="green"
+      # points( depth~ts, x[O$linear.method.indices,], col=mcol, pch=20, cex=0.2)      
+      abline (v=O$plotdata$timestamp[min(O$linear.method.indices)], col=mcol, lty="twodash")
+      abline (v=O$plotdata$timestamp[max(O$linear.method.indices)], col=mcol, lty="twodash")
+      DT = as.numeric( difftime( O$linear.method1, O$linear.method0, units="mins" ) )
+      legendtext = c( legendtext, paste( "linear: ", round( DT, 2) ) )
+      legendcol = c( legendcol, mcol)
+      legendpch =c( legendpch, 20) 
+    }
+    
+    
+    if (all(is.finite( c( O$maxdepth.method0,  O$maxdepth.method1) )) ) {
+      mcol ="orange"
+      # points( depth~ts, x[O$linear.method.indices,], col=mcol, pch=20, cex=0.2)      
+      abline (v=O$plotdata$timestamp[min(O$maxdepth.method.indices)], col=mcol, lty="solid")
+      abline (v=O$plotdata$timestamp[max(O$maxdepth.method.indices)], col=mcol, lty="solid")
+      DT = as.numeric( difftime( O$maxdepth.method1, O$maxdepth.method0, units="mins" ) )
+      legendtext = c( legendtext, paste( "maxdepth: ", round( DT, 2) ) )
+      legendcol = c( legendcol, mcol)
+      legendpch =c( legendpch, 20) 
+    }
+    
+
+    if ( !( is.null( legendtext)))  legend( "top", legend=legendtext, col=legendcol, pch=legendpch, bg = "white" )
+    
+    #END code taken from bottom.contact
+    
+    
+    #User interface
+
+     goodans = FALSE
+      res <- tkmessageBox(title = "ManualTD",
+                          message = "Are you happy with these values?", icon = "info", type = "yesno")
+      
+      
+      if(grepl("yes", res)){ 
+        satisified = TRUE
+        goodans = TRUE
+        O$manual.method0 = start
+        O$manual.method1 = end
+        O$manual.method.indices = which( O$plotdata$timestamp >= O$manual.method0 &  O$plotdata$timestamp <= O$manual.method1 )
+       
+        
+       # result = rbind(result, row)
+   
+        # if(!file.exists(file)){
+        #   write.table(row, file = file, sep = ",", row.names = F, quote = F)
+        # }else{
+        #   write.table(row, file = file, sep = ",", append = T, col.names = F, row.names = F, quote = F )
+        # }
+      }
+      if(grepl("no", res)){ 
+
+       satisified = FALSE
+        goodans = TRUE
+      }
+      if(!goodans)print("Did not receive valid command, please try again.")
+    
+      dev.off()
+  }#END plotting loop while not satisfied
+
+  #BC todo- Add options for writing and overwritting to manual archive so that re-runs do not need to be re-clicked.  
+    
   }
   #BC- Added condition incase user interaction is desired, do not want to overwrite user input with archive data. 
   if (!is.null(bcp$from.manual.archive) && !bcp$user.interaction) {
@@ -555,7 +726,7 @@ bottom.contact = function( x, bcp, debugrun=FALSE ) {
     trange = range( x$ts[O$good], na.rm=TRUE )
     drange = c( quantile( x$depth, c(0.05, 0.975), na.rm=TRUE) , median( x$depth, na.rm=TRUE ) * 1.05 )
     #BC - Plots fail in RStudio graphics device, add clause
-    dev.new(noRStudioGD = FALSE)
+    dev.new(noRStudioGD = TRUE)
     plot(depth~ts, x, ylim=c(drange[2],drange[1]), xlim=c(trange[1],trange[2]), pch=20, cex=0.1, col="gray" )
     mcol = "yellow"
     points( depth~ts, x[ O$maxdepth.method.indices, ], pch=20, col=mcol, cex=0.2)
