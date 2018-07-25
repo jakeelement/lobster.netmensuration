@@ -394,11 +394,9 @@ require(tcltk)
 
   O$manual.method0 = NA #### NOTE:: using the 'c' operator on posix strips out the timezone info! this must be retained
   O$manual.method1 = NA  ### NOTE:: using the 'c' operator on posix strips out the timezone info! this must be retained
+
   if ( bcp$user.interaction  ) {
-    #BC todo- Make this method more robust, make similar to plot found in bottom.contact.plot with more
-    #         sensor outputs for guidance. Also include user prompts 
-    
-    
+  
     satisified = F
     while(!satisified){
     
@@ -410,36 +408,41 @@ require(tcltk)
     par(mar=c(5, 8, 4, 4) + 0.1)
     
     grange = min(which(O$good)):max(which(O$good))
-    print(O$plotdata$wingspread[grange])
+    
+    if("wingspread" %in% names(O$plotdata)){
     #Plot the door spread
-    plot(O$plotdata$timestamp[grange], O$plotdata$wingspread[grange], axes=F, ylim=c(min(O$plotdata$wingspread[grange], na.rm = TRUE)-1,max(O$plotdata$wingspread[grange], na.rm = TRUE)+1), xlab="", ylab="",type="p",col="blue", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
+    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], axes=F, ylim=c(min(O$plotdata$wingspread[grange], na.rm = TRUE)-1,max(O$plotdata$wingspread[grange], na.rm = TRUE)+1), xlab="", ylab="",type="p",col="blue", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
     smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], spar=.5)
     lines(smoothingSpline, col="blue") 
     abline( h = c(median(O$plotdata$wingspread[grange], na.rm = TRUE)), col = "blue", lty =2 )
     axis(2,col="blue", col.lab = "blue", col.axis = "blue", lwd=1)
     mtext(2,text="Wing Spread",col = "blue",line=2)
-    
+    }
     
     #Plot the opening 
+    if("opening" %in% names(O$plotdata)){
     par(new=T)
-    plot(O$plotdata$timestamp[grange], O$plotdata$opening[grange], axes=F, ylim=c(min(O$plotdata$opening[grange], na.rm = TRUE)-1,max(O$plotdata$opening[grange], na.rm = TRUE)+1), xlab="", ylab="",type="p",col="brown", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
+    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], axes=F, ylim=c(min(O$plotdata$opening[grange], na.rm = TRUE)-1,max(O$plotdata$opening[grange], na.rm = TRUE)+1), xlab="", ylab="",type="p",col="brown", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
     smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], spar=.5)
     lines(smoothingSpline, col="brown") 
     axis(2, ylim=c(min(O$plotdata$opening[grange]),max(O$plotdata$opening[grange])),col = "brown",col.lab = "brown", col.axis = "brown",lwd=1,line=3.5)
     mtext(2,text="Opening", col = "brown", line=5.5)
+    }
     
     #Plot the depth (Clickable)
     par(new=T)
-    plot(O$plotdata$timestamp[grange], O$plotdata$depth[grange], axes=F, ylim=rev(c(min(O$plotdata$depth[grange], na.rm = TRUE)-1,max(O$plotdata$depth[grange], na.rm = TRUE)+1)), xlab="", ylab="", type="l", main=O$id,xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])),lwd=1)
+    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$depth[grange]))], O$plotdata$depth[grange][which(!is.na(O$plotdata$depth[grange]))], axes=F, ylim=rev(c(min(O$plotdata$depth[grange], na.rm = TRUE)-1,max(O$plotdata$depth[grange], na.rm = TRUE)+1)), xlab="", ylab="", type="l", main=O$id,xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])),lwd=1)
     axis(4, ylim=rev(c(min(O$plotdata$depth[grange], na.rm = TRUE)-1,max(O$plotdata$depth[grange], na.rm = TRUE)+1)),lwd=1)
     mtext(4,text="Depth", line = 2)
     
     #Set up time axis plotting
     abli = seq(O$plotdata$timestamp[grange][1],O$plotdata$timestamp[grange][length(O$plotdata$timestamp[grange])], "1 min")
-    
+    str(abli)
     #Draw the time axis
     axis.POSIXct(1, at = abli, format = "%H:%M:%S", labels = TRUE)
-    mtext(unique(date(abli)),side=1,col="black",line=2)
+    str(abli)
+    ablit = unique(as.character(lubridate::date(abli)))
+    mtext(text = ablit, side=1, col="black", line=2)
     abline( v = abli, col = "lightgrey")
     
     
@@ -579,23 +582,50 @@ require(tcltk)
       dev.off()
   }#END plotting loop while not satisfied
 
-  #BC todo- Add options for writing and overwritting to manual archive so that re-runs do not need to be re-clicked.  
-    
+  if(is.na(O$manual.method0) || is.na(O$manual.method1)){
+    bcp$user.interaction = FALSE
+  }  
+  else{
+    if(!is.null(bcp$from.manual.archive)){
+      manualclick = NULL
+      if(file.exists(file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"))){
+        manualclick = read.csv(file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"), as.is=TRUE)
+        station = unlist(strsplit(bcp$id, "\\."))[4]
+        sta.ind = which(manualclick$station == station & manualclick$year == bcp$YR)
+        if(length(sta.ind) == 0){
+          manualclick = rbind(manualclick, data.frame(station = station, start = as.character(O$manual.method0), end = as.character(O$manual.method1), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id))
+        }
+        else{
+          manualclick$station[sta.ind] = station
+          manualclick$start[sta.ind] = O$manual.method0
+          manualclick$end[sta.ind] = O$manual.method1
+          manualclick$depth[sta.ind] = mean( x$depth, na.rm=TRUE )
+          manualclick$year[sta.ind] = bcp$YR
+          manualclick$trip[sta.ind] = bcp$id
+        }
+      }
+      else{
+        manualclick = data.frame(station = station, start = O$manual.method0, end = O$manual.method1, depth =  mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id)
+      }
+      write.csv(manualclick, file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"), row.names = FALSE )
+    }
   }
-  #BC- Added condition incase user interaction is desired, do not want to overwrite user input with archive data. 
+   
+  }
+
+  #BC- Added condition incase user interaction is desired, no need to do this step. 
   if (!is.null(bcp$from.manual.archive) && !bcp$user.interaction) {
      print( "Loading values from previously generated .csv")
-     manualclick = read.csv(file.path(bcp$from.manual.archive, paste("clicktouchdown_final_", bcp$YR, ".csv", sep = "")), as.is=TRUE)
+    if(file.exists(file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"))){
+     manualclick = read.csv(file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"), as.is=TRUE)
      station = unlist(strsplit(bcp$id, "\\."))[4]
-     sta.ind = which(manualclick$station == station)
+     sta.ind = which(manualclick$station == station & manualclick$year == bcp$YR)
      if(length(sta.ind == 1)){
-       mm0 = mdy_hms(manualclick$start[sta.ind], tz = "America/Halifax")
-       O$manual.method0 =format(mm0, tz = "UTC")
-           
-       mm1 = mdy_hms(manualclick$end[sta.ind], tz = "America/Halifax")
-       O$manual.method1 =format(mm1, tz = "UTC")
+       O$manual.method0 = ymd_hms(manualclick$start[sta.ind], tz = "UTC")
+       O$manual.method1 = ymd_hms(manualclick$end[sta.ind], tz = "UTC")
        
      }
+    }
   }
 
   O$means0 = NA  ### NOTE:: using the 'c' operator on posix strips out the timezone info! this must be retained
