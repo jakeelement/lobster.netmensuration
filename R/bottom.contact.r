@@ -200,9 +200,8 @@ require(tcltk)
   O$variance.method.indices = NA
   res = NULL
   res = try( bottom.contact.gating.variance ( x, O$good, bcp ), silent =TRUE )
-
   if ( ! "try-error" %in% class( res) )  {
-    if (exists( "bc0", res )) {
+    if ("bc0" %in% names(res)) {
     if ( all(is.finite( c(res$bc0, res$bc1 )) ) ) {
       DT = abs( as.numeric( difftime( res$bc0, res$bc1, units="mins" ) ) )
       if ( length(DT) == 1 ) {
@@ -251,7 +250,7 @@ require(tcltk)
   res = try( bottom.contact.modal( sm=sm0, bcp ), silent=TRUE )
     if ( ! "try-error" %in% class( res) ) {
       #browser()
-      if (exists( "bc0", res )) {
+      if ("bc0" %in% names(res)) {
       if ( all(is.finite( c(res$bc0, res$bc1 )) ) ) {
         DT =  abs( as.numeric( difftime( res$bc0, res$bc1, units="mins" ) ) )
         if ( length(DT) == 1 ) {
@@ -288,7 +287,7 @@ require(tcltk)
   res = try(
     bottom.contact.smooth( sm=sm0, bcp=bcp ) , silent =TRUE)
     if ( ! "try-error" %in% class( res) ) {
-      if (exists( "bc0", res )) {
+      if ("bc0" %in% names(res)) {
       if ( all(is.finite( c(res$bc0, res$bc1 )) ) ) {
         DT =  abs( as.numeric( difftime( res$bc0, res$bc1, units="mins" ) ) )
         if ( length(DT) == 1) {
@@ -324,9 +323,8 @@ require(tcltk)
   bcmethods=c( "smooth.method", "modal.method" )
   res = NULL
   res = try( bottom.contact.maxdepth( sm=sm0, O=O, bcmethods=bcmethods, bcp=bcp ) , silent=TRUE )
-
   if ( ! "try-error" %in% class( res) ) {
-    if (exists( "bc0", res )) {
+    if ("bc0" %in% names(res)) {
     if ( all(is.finite( c(res$bc0, res$bc1 )) ) ) {
       DT =  abs( as.numeric( difftime( res$bc0, res$bc1, units="mins" ) ) )
       if ( length(DT) == 1 ) {
@@ -364,9 +362,8 @@ require(tcltk)
 
   res = NULL
   res = try( bottom.contact.linear( sm=sm0, O=O, bcmethods=bcmethods, bcp=bcp ) , silent=TRUE )
-
   if ( ! "try-error" %in% class( res) ) {
-    if (exists( "bc0", res )) {
+     if ("bc0" %in% names(res)) {
     if ( all(is.finite( c(res$bc0, res$bc1 )) ) ) {
       DT =  abs( as.numeric( difftime( res$bc0, res$bc1, units="mins" ) ) )
       if (  length(DT) == 1) {
@@ -419,14 +416,23 @@ require(tcltk)
     mtext(2,text="Wing Spread",col = "blue",line=2)
     }
     
+
+    yl=c(min(O$plotdata$opening[grange], na.rm = TRUE)-1,max(O$plotdata$opening[grange], na.rm = TRUE)+1)
+
+    
+    if(!is.numeric(yl[1]) | is.na(yl[1]) ) yl[1] = 0
+    if(!is.numeric(yl[2]) | is.na(yl[2]) ) yl[2] = 10
+    
     #Plot the opening 
     if("opening" %in% names(O$plotdata)){
+      if(length(which(!is.na(O$plotdata$opening[grange]))) > 10){
     par(new=T)
-    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], axes=F, ylim=c(min(O$plotdata$opening[grange], na.rm = TRUE)-1,max(O$plotdata$opening[grange], na.rm = TRUE)+1), xlab="", ylab="",type="p",col="brown", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
+    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], axes=F, ylim=yl, xlab="", ylab="",type="p",col="brown", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
     smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], spar=.5)
     lines(smoothingSpline, col="brown") 
     axis(2, ylim=c(min(O$plotdata$opening[grange]),max(O$plotdata$opening[grange])),col = "brown",col.lab = "brown", col.axis = "brown",lwd=1,line=3.5)
     mtext(2,text="Opening", col = "brown", line=5.5)
+    }
     }
     
     #Plot the depth (Clickable)
@@ -452,7 +458,12 @@ require(tcltk)
     for(k in 1:(length(O$plotdata$latitude[grange])-1)){
       p1 = c(O$plotdata$longitude[grange][1],O$plotdata$latitude[grange][1])
       p2 = c(O$plotdata$longitude[grange][k+1],O$plotdata$latitude[grange][k+1])
-      disfromorigin[k+1] = distHaversine(p1 , p2, r=6378137)
+      if(!is.null(p1) & !is.null(p2)){
+      if(!is.na(p1) & !is.na(p2))
+           {
+             disfromorigin[k+1] = distHaversine(p1 , p2, r=6378137)
+    }
+    }
     }
     neu = rep(0, 1, length(O$plotdata$latitude[grange]))
     for(k in 1:(length(disfromorigin)-1)){
@@ -731,8 +742,8 @@ require(tcltk)
 
   # estimate surface area if possible using wingspread &/or doorspread
   O$surface.area = NA
-  if ( exists ( "wingspread", x ) | exists( "doorspread", x ) ) {
-    sa = try( surfacearea.estimate( bcp=bcp, O=O ), silent=TRUE )
+  if ( "wingspread" %in% names(x)  | "doorspread" %in% names(x) )  {
+   sa = try( surfacearea.estimate( bcp=bcp, O=O ), silent=TRUE )
     if ( ! "try-error" %in% class( sa ) ) O$surface.area = sa
   }
 
@@ -740,7 +751,7 @@ require(tcltk)
   # for minilog and seabird data .. we have temperature estimates to make ..
   tmean= NA
   tmeansd = NA
-  if (exists( "temperature", x )) {
+  if ("temperature" %in% names(x) ) {
     tmean = mean( x$temperature[fin.all], na.rm=TRUE )
     tmeansd = sd( x$temperature[fin.all], na.rm=TRUE )
   }
