@@ -10,6 +10,6 @@ require( "devtools")
 install_bitbucket( "ecomod/netmensuration" )
 ```
 
-Setup environment: https://ecomod@bitbucket.org/ecomod/aegis.base
+Setup environment: https://bitbucket.org/ecomod/aegis.base
 
 External dependency: INLA ( http://www.r-inla.org/download )
