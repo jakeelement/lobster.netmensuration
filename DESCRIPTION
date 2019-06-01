@@ -10,15 +10,14 @@ Description: This project interacts with the functionality of bio and
 Depends: R (>= 3.0.0)
 Imports:
   devtools,
-  aegis.env,
+  aegis.base,
   lubridate,
   Matrix,
   tcltk
 Suggests:
-  aegis,
   INLA,
   sp,
   splines
 License: MIT
 LazyData: true
-URL: https://bitbucket.org/ecomod/netmensuration
+URL: https://bitbucket.org/ecomod/netmensuration.git
