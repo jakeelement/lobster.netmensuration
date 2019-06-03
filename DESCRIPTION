@@ -14,10 +14,10 @@ Imports:
   Matrix,
   tcltk
 Suggests:
-  aegis.base,
+  aegis,
   INLA,
   sp,
   splines
 License: MIT
 LazyData: true
-URL: https://bitbucket.org/ecomod/netmensuration
+URL: https://github.com/jae0/netmensuration

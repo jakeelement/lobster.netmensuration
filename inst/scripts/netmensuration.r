@@ -9,9 +9,9 @@
 # created to use mouse to choose file and run etc ... be my guest .. :)
 
 # set up libs and bio functions
-p = aegis::aegis_parameters( DS="groundfish" )
+p = aegis.survey::groundfish_parameters()
 
-datadir = project.datadirectory("aegis", "groundfish", "data", "nets", "Scanmar", "datalogs", "2015", "NED2015002" )  # storage location
+datadir = file.path( p$scanmar.dir, "datalogs", "2015", "NED2015002" )  # storage location
 fn = "NED2015002.028.2015-Mar21-162742.SET.LOG" # filename of data file to examine
 fl = file.path( datadir, fn)
 rawdata = load.scanmar.rawdata( fl )
@@ -27,9 +27,9 @@ str(bc)
 ### -----------------------------------------------------------------------
 
 
-p = aegis::aegis_parameters( DS="groundfish" )
+p = aegis.survey::groundfish_parameters()
+datadir = file.path( p$scanmar.dir, "datalogs", "2014" )  # storage location for raw data logs
 
-datadir = project.datadirectory("aegis", "groundfish", "data", "nets", "Scanmar", "datalogs", "2014" )  # storage location for raw data logs
 fn.base = "basedata.rdata"  # storage of outputs
 fn.meta = "metadata.rdata"
 

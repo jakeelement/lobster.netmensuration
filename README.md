@@ -7,9 +7,9 @@ Installation:
 ```
 install.packages( "devtools", ask=F, dependencies=TRUE )
 require( "devtools")
-install_bitbucket( "ecomod/netmensuration" )
+install_github( "jae0/netmensuration" )
 ```
 
-Setup environment: https://bitbucket.org/ecomod/aegis.base
+Setup environment: https://github.com/jae0/aegis
 
 External dependency: INLA ( http://www.r-inla.org/download )
