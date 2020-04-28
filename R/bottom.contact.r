@@ -599,6 +599,7 @@ require(tcltk)
   else{
     if(is.null(bcp$station)) station = unlist(strsplit(bcp$id, "\\."))[4]
     else station = bcp$station
+    bcp$id = bcp$trip
     mf = NULL
     if(!is.null(bcp$from.manual.archive)) mf = file.path(bcp$from.manual.archive, "clicktouchdown_all.csv")
     if(!is.null(bcp$from.manual.file)) mf = bcp$from.manual.file
@@ -609,7 +610,6 @@ require(tcltk)
      
         if(bcp$datasource == "lobster"){
           sta.ind = which(manualclick$station == station & manualclick$trip == bcp$trip)
-          bcp$id = bcp$trip
         }
         else{  
           sta.ind = which(manualclick$station == station & manualclick$year == bcp$YR)
