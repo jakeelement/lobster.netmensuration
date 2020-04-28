@@ -398,7 +398,7 @@ require(tcltk)
     while(!satisified){
     
     #open plot window, user can modify the numbers to fit their screen
-    x11(25, 15)
+    x11(width = 25, height = 15)
     
     
     #Define Margins for multiple y-axis
@@ -597,28 +597,40 @@ require(tcltk)
     bcp$user.interaction = FALSE
   }  
   else{
-    if(!is.null(bcp$from.manual.archive)){
+    if(is.null(bcp$station)) station = unlist(strsplit(bcp$id, "\\."))[4]
+    else station = bcp$station
+    mf = NULL
+    if(!is.null(bcp$from.manual.archive)) mf = file.path(bcp$from.manual.archive, "clicktouchdown_all.csv")
+    if(!is.null(bcp$from.manual.file)) mf = bcp$from.manual.file
+    if(!is.null(mf)){  
       manualclick = NULL
-      if(file.exists(file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"))){
-        manualclick = read.csv(file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"), as.is=TRUE)
-        station = unlist(strsplit(bcp$id, "\\."))[4]
-        sta.ind = which(manualclick$station == station & manualclick$year == bcp$YR)
+      if(file.exists(mf)){
+        manualclick = read.csv(mf, as.is=TRUE)
+     
+        if(bcp$datasource == "lobster"){
+          sta.ind = which(manualclick$station == station & manualclick$trip == bcp$trip)
+          bcp$id = bcp$trip
+        }
+        else{  
+          sta.ind = which(manualclick$station == station & manualclick$year == bcp$YR)
+        }
         if(length(sta.ind) == 0){
+          
           manualclick = rbind(manualclick, data.frame(station = station, start = as.character(O$manual.method0), end = as.character(O$manual.method1), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id))
         }
         else{
           manualclick$station[sta.ind] = station
-          manualclick$start[sta.ind] = O$manual.method0
-          manualclick$end[sta.ind] = O$manual.method1
+          manualclick$start[sta.ind] = as.character(O$manual.method0)
+          manualclick$end[sta.ind] = as.character(O$manual.method1)
           manualclick$depth[sta.ind] = mean( x$depth, na.rm=TRUE )
           manualclick$year[sta.ind] = bcp$YR
           manualclick$trip[sta.ind] = bcp$id
         }
       }
       else{
-        manualclick = data.frame(station = station, start = O$manual.method0, end = O$manual.method1, depth =  mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id)
+        manualclick = data.frame(station = station, start = as.character(O$manual.method0), end = as.character(O$manual.method1), depth =  mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id)
       }
-      write.csv(manualclick, file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"), row.names = FALSE )
+      write.csv(manualclick, mf, row.names = FALSE )
     }
   }
    
@@ -638,7 +650,20 @@ require(tcltk)
      }
     }
   }
-
+  #BC- Added condition incase user interaction is desired, no need to do this step. 
+  if (!is.null(bcp$from.manual.file) && !bcp$user.interaction) {
+    print( "Loading values from previously generated .csv")
+    if(file.exists(bcp$from.manual.file)){
+      manualclick = read.csv(bcp$from.manual.file, as.is=TRUE)
+      station = unlist(strsplit(bcp$station))
+      sta.ind = which(manualclick$station == station & manualclick$trip == bcp$trip)
+      if(length(sta.ind == 1)){
+        O$manual.method0 = ymd_hms(manualclick$start[sta.ind], tz = "UTC")
+        O$manual.method1 = ymd_hms(manualclick$end[sta.ind], tz = "UTC")
+        
+      }
+    }
+  }
   O$means0 = NA  ### NOTE:: using the 'c' operator on posix strips out the timezone info! this must be retained
   O$means1 = NA  ### NOTE:: using the 'c' operator on posix strips out the timezone info! this must be retained
 
