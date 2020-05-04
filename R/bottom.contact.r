@@ -1,6 +1,6 @@
 #' @title  bottom.contact
 #' @description  Calculates indicies of touchdown and liftoff
-#' @import tcltk
+#' @import tcltk geosphere lubridate
 #' @return dataframe with various results
 #' @export
 bottom.contact = function( x, bcp, debugrun=FALSE ) {
@@ -443,10 +443,10 @@ require(tcltk)
     
     #Set up time axis plotting
     abli = seq(O$plotdata$timestamp[grange][1],O$plotdata$timestamp[grange][length(O$plotdata$timestamp[grange])], "1 min")
-    str(abli)
+
     #Draw the time axis
     axis.POSIXct(1, at = abli, format = "%H:%M:%S", labels = TRUE)
-    str(abli)
+ 
     ablit = unique(as.character(lubridate::date(abli)))
     mtext(text = ablit, side=1, col="black", line=2)
     abline( v = abli, col = "lightgrey")
@@ -461,7 +461,7 @@ require(tcltk)
       if(!is.null(p1) & !is.null(p2)){
       if(!is.na(p1) & !is.na(p2))
            {
-             disfromorigin[k+1] = distHaversine(p1 , p2, r=6378137)
+             disfromorigin[k+1] = geosphere::distHaversine(p1 , p2, r=6378137)
     }
     }
     }
@@ -644,8 +644,8 @@ require(tcltk)
      station = unlist(strsplit(bcp$id, "\\."))[4]
      sta.ind = which(manualclick$station == station & manualclick$year == bcp$YR)
      if(length(sta.ind == 1)){
-       O$manual.method0 = ymd_hms(manualclick$start[sta.ind], tz = "UTC")
-       O$manual.method1 = ymd_hms(manualclick$end[sta.ind], tz = "UTC")
+       O$manual.method0 = lubridate::ymd_hms(manualclick$start[sta.ind], tz = "UTC")
+       O$manual.method1 = lubridate::ymd_hms(manualclick$end[sta.ind], tz = "UTC")
        
      }
     }
@@ -658,8 +658,8 @@ require(tcltk)
       station = unlist(strsplit(bcp$station))
       sta.ind = which(manualclick$station == station & manualclick$trip == bcp$trip)
       if(length(sta.ind == 1)){
-        O$manual.method0 = ymd_hms(manualclick$start[sta.ind], tz = "UTC")
-        O$manual.method1 = ymd_hms(manualclick$end[sta.ind], tz = "UTC")
+        O$manual.method0 = lubridate::ymd_hms(manualclick$start[sta.ind], tz = "UTC")
+        O$manual.method1 = lubridate::ymd_hms(manualclick$end[sta.ind], tz = "UTC")
         
       }
     }
@@ -678,8 +678,8 @@ require(tcltk)
   bcm1 = paste(bcmethods, "1", sep="")
 
   # recovert to time zone of incoming data as time zone is lost with the transpose
-  tmp0 = ymd_hms( t( as.data.frame(O[ bcm0 ]) ) )  # UTC
-  tmp1 = ymd_hms( t( as.data.frame(O[ bcm1 ]) ) )  # UTC
+  tmp0 = lubridate::ymd_hms( t( as.data.frame(O[ bcm0 ]) ) )  # UTC
+  tmp1 = lubridate::ymd_hms( t( as.data.frame(O[ bcm1 ]) ) )  # UTC
 
   bottom0.mean =  mean(tmp0, na.rm=TRUE)
   bottom1.mean =  mean(tmp1, na.rm=TRUE)
