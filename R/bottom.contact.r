@@ -323,6 +323,7 @@ require(tcltk)
   bcmethods=c( "smooth.method", "modal.method" )
   res = NULL
   res = try( bottom.contact.maxdepth( sm=sm0, O=O, bcmethods=bcmethods, bcp=bcp ) , silent=TRUE )
+ 
   if ( ! "try-error" %in% class( res) ) {
     if ("bc0" %in% names(res)) {
     if ( all(is.finite( c(res$bc0, res$bc1 )) ) ) {
@@ -408,12 +409,17 @@ require(tcltk)
     
     if("wingspread" %in% names(O$plotdata)){
     #Plot the door spread
-    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], axes=F, ylim=c(min(O$plotdata$wingspread[grange], na.rm = TRUE)-1,max(O$plotdata$wingspread[grange], na.rm = TRUE)+1), xlab="", ylab="",type="p",col="blue", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
-    smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], spar=.5)
-    lines(smoothingSpline, col="blue") 
+    ylim=c(min(O$plotdata$wingspread[grange], na.rm = TRUE)-1,max(O$plotdata$wingspread[grange], na.rm = TRUE)+1)
+    if(is.finite(ylim)){
+    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], axes=F, ylim=ylim, xlab="", ylab="",type="p",col="blue", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
+      if(length(unique(na.omit(O$plotdata$wingspread[grange]))) > 5 ){
+       smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], spar=.5)
+       lines(smoothingSpline, col="blue") 
+      }
     abline( h = c(median(O$plotdata$wingspread[grange], na.rm = TRUE)), col = "blue", lty =2 )
     axis(2,col="blue", col.lab = "blue", col.axis = "blue", lwd=1)
     mtext(2,text="Wing Spread",col = "blue",line=2)
+    }
     }
     
 
@@ -430,13 +436,14 @@ require(tcltk)
     plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], axes=F, ylim=yl, xlab="", ylab="",type="p",col="brown", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
     smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], spar=.5)
     lines(smoothingSpline, col="brown") 
-    axis(2, ylim=c(min(O$plotdata$opening[grange]),max(O$plotdata$opening[grange])),col = "brown",col.lab = "brown", col.axis = "brown",lwd=1,line=3.5)
+    axis(2, ylim=yl,col = "brown",col.lab = "brown", col.axis = "brown",lwd=1,line=3.5)
     mtext(2,text="Opening", col = "brown", line=5.5)
     }
     }
     
     #Plot the depth (Clickable)
     par(new=T)
+    
     plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$depth[grange]))], O$plotdata$depth[grange][which(!is.na(O$plotdata$depth[grange]))], axes=F, ylim=rev(c(min(O$plotdata$depth[grange], na.rm = TRUE)-1,max(O$plotdata$depth[grange], na.rm = TRUE)+1)), xlab="", ylab="", type="l", main=O$id,xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])),lwd=1)
     axis(4, ylim=rev(c(min(O$plotdata$depth[grange], na.rm = TRUE)-1,max(O$plotdata$depth[grange], na.rm = TRUE)+1)),lwd=1)
     mtext(4,text="Depth", line = 2)
@@ -446,7 +453,6 @@ require(tcltk)
 
     #Draw the time axis
     axis.POSIXct(1, at = abli, format = "%H:%M:%S", labels = TRUE)
- 
     ablit = unique(as.character(lubridate::date(abli)))
     mtext(text = ablit, side=1, col="black", line=2)
     abline( v = abli, col = "lightgrey")

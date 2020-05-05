@@ -24,10 +24,10 @@ bottom.contact.linear = function( sm, O, bcmethods, bcp )  {
 
   tt0 =   tt1 =  t( as.data.frame(O[ bcm1 ]) )
 
-  tzone = tz (sm$timestamp[1] )
+  tzone = lubridate::tz(sm$timestamp[1])
   # recovert to UTC as time zone is lost with the transpose
-  tmp0 = ymd_hms( t( as.data.frame(O[ bcm0 ]) ), tz=tzone )
-  tmp1 = ymd_hms( t( as.data.frame(O[ bcm1 ]) ), tz=tzone )
+  tmp0 = lubridate::ymd_hms( t( as.data.frame(O[ bcm0 ]) ), tz=tzone )
+  tmp1 = lubridate::ymd_hms( t( as.data.frame(O[ bcm1 ]) ), tz=tzone )
 
   bottom0.mean =  mean(tmp0, na.rm=TRUE)
   bottom1.mean =  mean(tmp1, na.rm=TRUE)
