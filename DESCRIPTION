@@ -8,7 +8,7 @@ Description: This project interacts with the functionality of bio and
   a few useful statistics. Currently, Netmind, Seabird, Minilog, Scanmar
   and Marport data are supported.
 Depends: R (>= 3.0.0), lubridate, Matrix, INLA
-Imports: sp, splines, tcltk,
+Imports: sp, splines, tcltk
 Suggests: aegis
 License: MIT
 LazyData: true
