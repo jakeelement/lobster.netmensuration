@@ -323,7 +323,7 @@ require(tcltk)
   bcmethods=c( "smooth.method", "modal.method" )
   res = NULL
   res = try( bottom.contact.maxdepth( sm=sm0, O=O, bcmethods=bcmethods, bcp=bcp ) , silent=TRUE )
- 
+
   if ( ! "try-error" %in% class( res) ) {
     if ("bc0" %in% names(res)) {
     if ( all(is.finite( c(res$bc0, res$bc1 )) ) ) {
@@ -399,14 +399,9 @@ require(tcltk)
     while(!satisified){
 
     #open plot window, user can modify the numbers to fit their screen
-<<<<<<< HEAD
     x11(width = 25, height = 15)
-    
-    
-=======
-    dev.new()
 
->>>>>>> develop
+
     #Define Margins for multiple y-axis
     par(mar=c(5, 8, 4, 4) + 0.1)
 
@@ -414,29 +409,19 @@ require(tcltk)
 
     if("wingspread" %in% names(O$plotdata)){
     #Plot the door spread
-<<<<<<< HEAD
     ylim=c(min(O$plotdata$wingspread[grange], na.rm = TRUE)-1,max(O$plotdata$wingspread[grange], na.rm = TRUE)+1)
     if(is.finite(ylim)){
     plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], axes=F, ylim=ylim, xlab="", ylab="",type="p",col="blue", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
       if(length(unique(na.omit(O$plotdata$wingspread[grange]))) > 5 ){
        smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], spar=.5)
-       lines(smoothingSpline, col="blue") 
+       lines(smoothingSpline, col="blue")
       }
-=======
-    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], axes=F, ylim=c(min(O$plotdata$wingspread[grange], na.rm = TRUE)-1,max(O$plotdata$wingspread[grange], na.rm = TRUE)+1), xlab="", ylab="",type="p",col="blue", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
-    smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], spar=.5)
-    lines(smoothingSpline, col="blue")
->>>>>>> develop
     abline( h = c(median(O$plotdata$wingspread[grange], na.rm = TRUE)), col = "blue", lty =2 )
     axis(2,col="blue", col.lab = "blue", col.axis = "blue", lwd=1)
     mtext(2,text="Wing Spread",col = "blue",line=2)
     }
-<<<<<<< HEAD
     }
-    
-=======
 
->>>>>>> develop
 
     yl=c(min(O$plotdata$opening[grange], na.rm = TRUE)-1,max(O$plotdata$opening[grange], na.rm = TRUE)+1)
 
@@ -450,20 +435,15 @@ require(tcltk)
     par(new=T)
     plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], axes=F, ylim=yl, xlab="", ylab="",type="p",col="brown", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
     smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], spar=.5)
-<<<<<<< HEAD
-    lines(smoothingSpline, col="brown") 
-    axis(2, ylim=yl,col = "brown",col.lab = "brown", col.axis = "brown",lwd=1,line=3.5)
-=======
     lines(smoothingSpline, col="brown")
-    axis(2, ylim=c(min(O$plotdata$opening[grange]),max(O$plotdata$opening[grange])),col = "brown",col.lab = "brown", col.axis = "brown",lwd=1,line=3.5)
->>>>>>> develop
+    axis(2, ylim=yl,col = "brown",col.lab = "brown", col.axis = "brown",lwd=1,line=3.5)
     mtext(2,text="Opening", col = "brown", line=5.5)
     }
     }
 
     #Plot the depth (Clickable)
     par(new=T)
-    
+
     plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$depth[grange]))], O$plotdata$depth[grange][which(!is.na(O$plotdata$depth[grange]))], axes=F, ylim=rev(c(min(O$plotdata$depth[grange], na.rm = TRUE)-1,max(O$plotdata$depth[grange], na.rm = TRUE)+1)), xlab="", ylab="", type="l", main=O$id,xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])),lwd=1)
     axis(4, ylim=rev(c(min(O$plotdata$depth[grange], na.rm = TRUE)-1,max(O$plotdata$depth[grange], na.rm = TRUE)+1)),lwd=1)
     mtext(4,text="Depth", line = 2)
@@ -629,19 +609,19 @@ require(tcltk)
     mf = NULL
     if(!is.null(bcp$from.manual.archive)) mf = file.path(bcp$from.manual.archive, "clicktouchdown_all.csv")
     if(!is.null(bcp$from.manual.file)) mf = bcp$from.manual.file
-    if(!is.null(mf)){  
+    if(!is.null(mf)){
       manualclick = NULL
       if(file.exists(mf)){
         manualclick = read.csv(mf, as.is=TRUE)
-     
+
         if(bcp$datasource == "lobster"){
           sta.ind = which(manualclick$station == station & manualclick$trip == bcp$trip)
         }
-        else{  
+        else{
           sta.ind = which(manualclick$station == station & manualclick$year == bcp$YR)
         }
         if(length(sta.ind) == 0){
-          
+
           manualclick = rbind(manualclick, data.frame(station = station, start = as.character(O$manual.method0), end = as.character(O$manual.method1), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id))
         }
         else{
@@ -670,19 +650,13 @@ require(tcltk)
      station = unlist(strsplit(bcp$id, "\\."))[4]
      sta.ind = which(manualclick$station == station & manualclick$year == bcp$YR)
      if(length(sta.ind == 1)){
-<<<<<<< HEAD
        O$manual.method0 = lubridate::ymd_hms(manualclick$start[sta.ind], tz = "UTC")
        O$manual.method1 = lubridate::ymd_hms(manualclick$end[sta.ind], tz = "UTC")
-       
-=======
-       O$manual.method0 = ymd_hms(manualclick$start[sta.ind], tz = "UTC")
-       O$manual.method1 = ymd_hms(manualclick$end[sta.ind], tz = "UTC")
 
->>>>>>> develop
      }
     }
   }
-  #BC- Added condition incase user interaction is desired, no need to do this step. 
+  #BC- Added condition incase user interaction is desired, no need to do this step.
   if (!is.null(bcp$from.manual.file) && !bcp$user.interaction) {
     print( "Loading values from previously generated .csv")
     if(file.exists(bcp$from.manual.file)){
@@ -692,7 +666,7 @@ require(tcltk)
       if(length(sta.ind == 1)){
         O$manual.method0 = lubridate::ymd_hms(manualclick$start[sta.ind], tz = "UTC")
         O$manual.method1 = lubridate::ymd_hms(manualclick$end[sta.ind], tz = "UTC")
-        
+
       }
     }
   }
