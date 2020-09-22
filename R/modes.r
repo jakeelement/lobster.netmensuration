@@ -5,7 +5,7 @@ modes = function( Z, eps=0, ... ) {
   if (debug) {
     # construct something that looks like a profile
     Z = - 50 * cos( seq(-pi/2, pi/2, by=.02) )
-    mid = trunc( length(Z) / 2 )
+    mid = floor( length(Z) / 2 )
     Z = c( Z[1:mid], Z[mid] + ( runif( length(Z) )-0.5)*5, Z[mid:length(Z)] )
     Z = max(Z) -Z
     plot(Z)

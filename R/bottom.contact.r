@@ -125,7 +125,7 @@ require(tcltk)
   # fix tails
   mm = modes( x$depth[ O$good ] ) # recompute after gating
   mm.bot = which ( x$depth >= mm$lb2 & x$depth <= mm$ub2 ) # first est of bottom
-  mm.med = trunc( median( mm.bot, na.rm=TRUE ) )
+  mm.med = floor( median( mm.bot, na.rm=TRUE ) )
   # fix tails when the tails are not a single smooth tail:
   llim = mm$mode + bcp$depth.range[1]
   for ( ll in mm.med:1 ) {
@@ -231,7 +231,7 @@ require(tcltk)
 
   # finalize selection of area of interest (based upon gating, above)
   aoi.range = range( which( O$good )  )
-  aoi.mid = trunc( mean( aoi.range ) ) # approximate midpoint
+  aoi.mid = floor( mean( aoi.range ) ) # approximate midpoint
   aoi.min = aoi.range[1]
   aoi.max = aoi.range[2]
   O$aoi = aoi.min:aoi.max  # stored for use in the linear method where we need to recover the left-most index

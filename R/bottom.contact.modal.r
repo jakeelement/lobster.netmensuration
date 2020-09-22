@@ -37,10 +37,10 @@ bottom.contact.modal = function( sm, bcp ) {
   aoi.i = which( sm$Z > Z0$lb2 &  sm$Z < Z0$ub2 )
   aoi = min(aoi.i) : max(aoi.i)
   aoi.n = length(aoi)
-  aoi.trunc = trunc( aoi.n / 5 )
+  aoi.trunc = floor( aoi.n / 5 )
   aoi = aoi[ aoi.trunc] : aoi[ aoi.n-aoi.trunc ]  # trim off 1/5 off each tail
 
-  aoi.inner = trunc( length(aoi) / 3 )
+  aoi.inner = floor( length(aoi) / 3 )
 
   left = min(aoi.i) + c( 0 : aoi.inner )
   right = max(aoi.i) + c( - aoi.inner : 0 )
@@ -57,7 +57,7 @@ bottom.contact.modal = function( sm, bcp ) {
     Zrmodes.left = modes( sm$Zl[ left ] )
     i.left = which( sm$Zl[left] > Zrmodes.left$lb2 & sm$Zl[left] < Zrmodes.left$ub2    )
     i.mod = left[i.left]
-    ill = 5:trunc(median(i.mod) )
+    ill = 5:floor(median(i.mod) )
 
     if ( abs( min(sm$Zl[ill], na.rm=TRUE) - Zrmodes.left$mode ) <   bcp$modal.sd.multiplier* Zrmodes.left$sd ) {
       r0 = 1 # nothing to do .. assuming it is truncated without the left tail ..
@@ -79,7 +79,7 @@ bottom.contact.modal = function( sm, bcp ) {
     Zrmodes.right = modes( sm$Zr[ right ] )
     i.right = which( sm$Zr[right] > Zrmodes.right$lb2 & sm$Zr[right] < Zrmodes.right$ub2 )
     i.mod = right[i.right]
-    irr = (N-5):trunc(median(i.mod))
+    irr = (N-5):floor(median(i.mod))
 
     if ( abs( min(sm$Zr[irr], na.rm=TRUE) - Zrmodes.right$mode ) <  bcp$modal.sd.multiplier * Zrmodes.right$sd ) {
       r1 = N # nothing to do ... assuming it is truncated without the right tail ..
