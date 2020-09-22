@@ -40,7 +40,7 @@ bottom.contact.smooth = function( sm, bcp )  {
   iib = intersect( which( sm$dZ.smoothed <= ub & sm$dZ.smoothed >= lb ), c(ml0:mr0))
   ib = min(iib): max(iib)
 
-  ng = trunc( length(ib) / 10 ) # small chunk close to candidate area of interest
+  ng = floor( length(ib) / 10 ) # small chunk close to candidate area of interest
   ml = ib[ ng ]
   mr = ib[ (length(ib) - ng) ]
 

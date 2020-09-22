@@ -10,7 +10,7 @@ bottom.contact.gating.variance = function( x, good, bcp ) {
   aoi.range = range( which( good & is.finite(x$depth) ) )
   aoi.min = aoi.range[1]
   aoi.max = aoi.range[2]
-  aoi.mid = trunc( mean( aoi.range ) ) # approximate midpoint
+  aoi.mid = floor( mean( aoi.range ) ) # approximate midpoint
   aoi = aoi.min:aoi.max
 
   # determine approximate midpoint of the bottom track
@@ -22,11 +22,11 @@ bottom.contact.gating.variance = function( x, good, bcp ) {
 
   if (length(oo)> 10 ) {
     bot.range = range( oo) ## first pass (fast/rough) estimate of likely range of bottom indices
-    aoi.mid = trunc( mean( range( oo)) )
+    aoi.mid = floor( mean( range( oo)) )
   }
 
   aoi.sd = sd( x$depth, na.rm=TRUE )  ## SD
-  buffer = trunc(length(aoi)/10) # additional points to add beyond midpoint to seed initial SD estimates
+  buffer = floor(length(aoi)/10) # additional points to add beyond midpoint to seed initial SD estimates
   if(any((aoi.mid-buffer)<1)) buffer = aoi.mid-1 #keep the index positive
   duration = 0
 
