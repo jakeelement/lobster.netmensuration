@@ -1,7 +1,7 @@
 Package: netmensuration
 Title: Package that interacts with bio and associated projects to
   handle net mensuration data streams
-Version: 0.1
+Version: 2021.1
 Authors@R: c( person("Jae", "Choi", email="choi.jae.seok@gmail.com", role=c("aut", "cre")) )
 Description: This project interacts with the functionality of bio and
   associated projects to handle net mensuration data streams and compute
