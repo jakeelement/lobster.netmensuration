@@ -4,6 +4,7 @@
 #' @return dataframe with various results
 #' @export
 bottom.contact = function( x, bcp, debugrun=FALSE ) {
+
 require(tcltk)
   # all timestamps must be in Posix/UTC
   # range comparisons seem to fail when they are not
@@ -249,7 +250,6 @@ require(tcltk)
   res = NULL
   res = try( bottom.contact.modal( sm=sm0, bcp ), silent=TRUE )
     if ( ! "try-error" %in% class( res) ) {
-      #browser()
       if ("bc0" %in% names(res)) {
       if ( all(is.finite( c(res$bc0, res$bc1 )) ) ) {
         DT =  abs( as.numeric( difftime( res$bc0, res$bc1, units="mins" ) ) )
@@ -262,6 +262,7 @@ require(tcltk)
       }}
     }
 
+  
   if(debug.plot) {
     trange = range( x$ts[O$good], na.rm=TRUE )
     drange = c( quantile( x$depth, c(0.05, 0.975), na.rm=TRUE) , median( x$depth, na.rm=TRUE ) * 1.05 )
@@ -323,7 +324,6 @@ require(tcltk)
   bcmethods=c( "smooth.method", "modal.method" )
   res = NULL
   res = try( bottom.contact.maxdepth( sm=sm0, O=O, bcmethods=bcmethods, bcp=bcp ) , silent=TRUE )
-
   if ( ! "try-error" %in% class( res) ) {
     if ("bc0" %in% names(res)) {
     if ( all(is.finite( c(res$bc0, res$bc1 )) ) ) {
@@ -411,7 +411,7 @@ require(tcltk)
     #Plot the door spread
     ylim=c(min(O$plotdata$wingspread[grange], na.rm = TRUE)-1,max(O$plotdata$wingspread[grange], na.rm = TRUE)+1)
     if(is.finite(ylim)){
-    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], axes=F, ylim=ylim, xlab="", ylab="",type="p",col="blue", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
+    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], axes=F, ylim=ylim, xlab="", ylab="",type="p",col="#0000FF1A", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
       if(length(unique(na.omit(O$plotdata$wingspread[grange]))) > 5 ){
        smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], spar=.5)
        lines(smoothingSpline, col="blue")
@@ -433,7 +433,7 @@ require(tcltk)
     if("opening" %in% names(O$plotdata)){
       if(length(which(!is.na(O$plotdata$opening[grange]))) > 10){
     par(new=T)
-    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], axes=F, ylim=yl, xlab="", ylab="",type="p",col="brown", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
+    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], axes=F, ylim=yl, xlab="", ylab="",type="p",col="#A52A2A1A", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
     smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], spar=.5)
     lines(smoothingSpline, col="brown")
     axis(2, ylim=yl,col = "brown",col.lab = "brown", col.axis = "brown",lwd=1,line=3.5)
@@ -621,8 +621,8 @@ require(tcltk)
           sta.ind = which(manualclick$station == station & manualclick$year == bcp$YR)
         }
         if(length(sta.ind) == 0){
-
-          manualclick = rbind(manualclick, data.frame(station = station, start = as.character(O$manual.method0), end = as.character(O$manual.method1), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id))
+          print(bcp$trip)
+           manualclick = rbind(manualclick, data.frame(station = station, start = unlist(as.character(O$manual.method0)), end = unlist(as.character(O$manual.method1)), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id))
         }
         else{
           manualclick$station[sta.ind] = station
@@ -641,8 +641,9 @@ require(tcltk)
   }
 
   }
-
-  #BC- Added condition incase user interaction is desired, no need to do this step.
+  
+  
+  #BC- Added condition in case user interaction is desired, no need to do this step.
   if (!is.null(bcp$from.manual.archive) && !bcp$user.interaction) {
      print( "Loading values from previously generated .csv")
     if(file.exists(file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"))){
@@ -656,20 +657,7 @@ require(tcltk)
      }
     }
   }
-  #BC- Added condition incase user interaction is desired, no need to do this step.
-  if (!is.null(bcp$from.manual.file) && !bcp$user.interaction) {
-    print( "Loading values from previously generated .csv")
-    if(file.exists(bcp$from.manual.file)){
-      manualclick = read.csv(bcp$from.manual.file, as.is=TRUE)
-      station = unlist(strsplit(bcp$station))
-      sta.ind = which(manualclick$station == station & manualclick$trip == bcp$trip)
-      if(length(sta.ind == 1)){
-        O$manual.method0 = lubridate::ymd_hms(manualclick$start[sta.ind], tz = "UTC")
-        O$manual.method1 = lubridate::ymd_hms(manualclick$end[sta.ind], tz = "UTC")
 
-      }
-    }
-  }
   O$means0 = NA  ### NOTE:: using the 'c' operator on posix strips out the timezone info! this must be retained
   O$means1 = NA  ### NOTE:: using the 'c' operator on posix strips out the timezone info! this must be retained
 

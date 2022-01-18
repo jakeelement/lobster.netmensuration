@@ -1,4 +1,136 @@
+convert.marport.sds_csv2netmind = function( fnroot, yr, redo.marport_conversion = F ) {
+  fn_marport_proc = file.path(project.datadirectory(),"bio.snowcrab", "data", "marport", paste("marport_proc_", yr, ".RDATA", sep = ""))
+  if(redo.marport_conversion){
+  
+    fnroot = file.path("S:", "Survey", "Annual Files by Year", paste("ENS Snow Crab ",yr, "Survey", sep = ""), "completed", paste("Snow Crab Survey ",yr, sep = ""), "SCFINAL.csv")
+    con = file(fnroot, "r")
+    line = readLines(con, n = -1)
+    ind = grep("GPRMC", line)
+    inda = grep("192.168", line) 
+    indb = grep("RAW", line)  
+    indc = intersect(inda, indb)
+    indall = sort(c(indc, ind))
+    lines = line[indall]
+    close(con)
+    depth = ""
+    wing = ""
+    height = ""
+    pitch = ""
+    roll = ""
+    temp = ""
+    
+    marport = data.table::data.table()
+    for(i in 1:length(lines)) {
+      print(i)
+      lin = lines[i]
+      lin = gsub(";", ",", lin)
+      
+      
+      if(grepl("GPRMC", lin)){
+        gps = unlist(strsplit(lin, ","))[c(1, 3, 5, 7, 9, 11)]
+        marport = rbind(marport, cbind(gps[1], gps[6], gps[2], gps[3], gps[4], gps[5], height, NA, wing, depth, temp))
+        depth = NA
+        wing = NA
+        height = NA
+        pitch = NA
+        roll = NA
+        temp = NA
+      }
+      if(grepl("DEPTH", lin)){
+        depth = unlist(strsplit(lin, ","))[5]
+      }
+      if(grepl("DISTANCE", lin)){
+        wing = unlist(strsplit(lin, ","))[5]
+      }
+      if(grepl("ROLL", lin)){
+        roll = unlist(strsplit(lin, ","))[5]
+      }
+      if(grepl("PITCH", lin)){
+        pitch = unlist(strsplit(lin, ","))[5]
+      }
+      if(grepl("TEMPERATURE", lin)){
+        temp = unlist(strsplit(lin, ","))[5]
+      }
+      if(grepl("SENSORDTB", lin)){
+        height = unlist(strsplit(lin, ","))[5]
+      }
+      
+    }
+    
+    names(marport) = c("localtime", "Date",	"Time",	"Latitude",	"Longitude",	"Speed",	"Primary",	"Secondary",	"DoorSpread",	"Depth",	"Temperature")
+    
+    marport$localtime = lubridate::as_datetime(as.numeric(marport$localtime)/86400000 + lubridate::as_date("1970/01/01"), tz = "UTC")
+    marport$localtime = lubridate::with_tz(marport$localtime, "America/Halifax")
+    marport = tidyr::separate(data = marport, col = "Latitude", into = c('latdeg', 'latmin'), sep = 2, remove = F)
+    marport = tidyr::separate(data = marport, col = "Longitude", into = c('londeg', 'lonmin'), sep = 3, remove = F)
+    marport$lat = as.numeric(marport$latdeg) + as.numeric(marport$latmin)/60
+    marport$lon = (as.numeric(marport$londeg) + as.numeric(marport$lonmin)/60)*-1
+    
+   
+    save(marport, file =  fn_marport_proc)
+  }
+  load(fn_marport_proc)
+  
+  fn_netmind_arc = file.path(project.datadirectory(),"bio.snowcrab", "data", "netmind", "archive", yr)
+  if(!dir.exists(fn_netmind_arc)){ 
+    dir.create(fn_netmind_arc)
+  }
+  fl = list.files(fn_netmind_arc)
+  set = snowcrab.db( DS="setInitial" ) 
+  set = set[which(set$yr == yr),]
+  
+  set$station[which(nchar(set$station) == 1)] = paste("00", set$station[which(nchar(set$station) == 1)], sep = "")
+  set$station[which(nchar(set$station) == 2)] = paste("0", set$station[which(nchar(set$station) == 2)], sep = "")
+  missing.set = set[which(!paste("ep", set$station, ".txt", sep = "") %in% fl),]
+  missing.set = missing.set[order(missing.set$timestamp),]
+  
+  
+  for(i in 1:nrow(missing.set)){
+    curset = missing.set[i,]
+     if(curset$trip == "S06102021" && curset$station == "130") curset$station = "305"
+    sind = which(geosphere::distm(c(curset$lon, curset$lat),cbind(marport$lon, marport$lat), fun = distHaversine) < 2000)
+    if(length(sind) == 0){
+      warning(paste("Could Not find Marport data for station: ", curset$station, sep = ""))
+      next()
+    }
+    start = min(sind)
+    end = max(which(geosphere::distm(c(curset$lon1, curset$lat1),cbind(marport$lon, marport$lat), fun = distHaversine) < 2000))
+    marsub = marport[start:end,]
+    
+    
+    range = which((abs(dmy_hms(paste(marsub$Date, marsub$Time, sep = " ")) - curset$timestamp)) < minutes(15))
+    marsub = marsub[range,]
+    
+    
+    if(nrow(marsub) < 10){
+      warning(paste("Could Not find Marport data for station: ", curset$station, sep = ""))
+      next()
+    }
 
+    header =  paste("FileName: ",yr, "SnowCrabSurvey ep", curset$station, ".txt \nLocal Time: ", format(marsub$localtime[1], format = "%a %b %d  %H:%M:%S %Y"),"\nShip:  Trip: ", curset$trip, "  Tow:  ", curset$set, "\nComments: ", sep = "")
+    
+    marsub$Latitude = paste(marsub$latdeg, marsub$latmin, "N", sep = " ")
+    marsub$Longitude = paste(marsub$londeg, marsub$lonmin, "W", sep = " ")
+    marsub$Date = format(dmy(marsub$Date), format = "%y%m%d")
+    
+    marsub$localtime = NULL
+    marsub$latdeg = NULL 
+    marsub$latmin = NULL
+    marsub$londeg = NULL      
+    marsub$lonmin = NULL
+    marsub$lat = NULL      
+    marsub$lon = NULL
+    
+    file = file.path(project.datadirectory(),"bio.snowcrab", "data", "netmind", "archive", yr, paste("ep", curset$station, ".txt", sep = ""))
+    
+    cat(header, '\n',  file = file)
+    suppressWarnings(write.table(marsub, file, append = T, quote = F, row.names = F, col.names = T, sep = "  "))
+        
+  }
+
+  
+
+}
 
 load.marport.rawdata = function( fnroot, fncfg ) {
 

@@ -4,7 +4,7 @@ surfacearea.estimate = function( bcp, O ) {
   
   nms = O$plotdata[ O$bottom.contact,]
 
-  if (! ( exists( "wingspread", nms) & exists( "doorspread", nms) ) ) {
+  if (! ( exists( "wingspread", nms) || exists( "doorspread", nms) ) ) {
     warning( "Wingspread and doorspread were not found" )
     return(NA) 
   }

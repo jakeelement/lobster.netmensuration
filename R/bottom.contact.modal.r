@@ -1,5 +1,6 @@
 
 bottom.contact.modal = function( sm, bcp ) {
+
   # Modal method: gating by looking for modal distribution and estimating sd of the modal group
   # until a target number of breaks, nbins with valid data are found
   # see density and bw.SJ for more options
