@@ -326,6 +326,8 @@ require(tcltk)
   res = try( bottom.contact.maxdepth( sm=sm0, O=O, bcmethods=bcmethods, bcp=bcp ) , silent=TRUE )
   if ( ! "try-error" %in% class( res) ) {
     if ("bc0" %in% names(res)) {
+
+      if(length(res$bc1)>0 && length(res$bc0)>0){
     if ( all(is.finite( c(res$bc0, res$bc1 )) ) ) {
       DT =  abs( as.numeric( difftime( res$bc0, res$bc1, units="mins" ) ) )
       if ( length(DT) == 1 ) {
@@ -334,7 +336,7 @@ require(tcltk)
         O$maxdepth.method1 = res$bc1 #### NOTE:: using the 'c' operator on posix strips out the timezone info! this must be retained
         O$maxdepth.method.indices = which( x$timestamp >= res$bc0 &  x$timestamp <= res$bc1 ) # x correct
       }}
-    }}
+    }}}
   }
 
   if(debug.plot) {

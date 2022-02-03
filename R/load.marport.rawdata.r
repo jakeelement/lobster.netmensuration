@@ -1,8 +1,7 @@
-convert.marport.sds_csv2netmind = function( fnroot, yr, redo.marport_conversion = F ) {
+convert.marport.sds_csv2netmind = function( fnroot = NULL, yr, redo.marport_conversion = F ) {
   fn_marport_proc = file.path(project.datadirectory(),"bio.snowcrab", "data", "marport", paste("marport_proc_", yr, ".RDATA", sep = ""))
   if(redo.marport_conversion){
   
-    fnroot = file.path("S:", "Survey", "Annual Files by Year", paste("ENS Snow Crab ",yr, "Survey", sep = ""), "completed", paste("Snow Crab Survey ",yr, sep = ""), "SCFINAL.csv")
     con = file(fnroot, "r")
     line = readLines(con, n = -1)
     ind = grep("GPRMC", line)
