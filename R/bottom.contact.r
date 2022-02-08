@@ -126,6 +126,7 @@ require(tcltk)
   # fix tails
   mm = modes( x$depth[ O$good ] ) # recompute after gating
   mm.bot = which ( x$depth >= mm$lb2 & x$depth <= mm$ub2 ) # first est of bottom
+  if(length(mm.bot) == 0) return(NULL)  # not enough variability in data
   mm.med = floor( median( mm.bot, na.rm=TRUE ) )
   # fix tails when the tails are not a single smooth tail:
   llim = mm$mode + bcp$depth.range[1]
