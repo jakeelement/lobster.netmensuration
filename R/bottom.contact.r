@@ -606,8 +606,8 @@ require(tcltk)
     bcp$user.interaction = FALSE
   }
   else{
-    if(is.null(bcp$station)) station = unlist(strsplit(bcp$id, "\\."))[4]
-    else station = bcp$station
+    if(is.null(bcp$set.no)) set.no = unlist(strsplit(bcp$id, "\\."))[4]
+    else set.no = bcp$set.no
     bcp$id = bcp$trip
     mf = NULL
     if(!is.null(bcp$from.manual.archive)) mf = file.path(bcp$from.manual.archive, "clicktouchdown_all.csv")
@@ -618,17 +618,17 @@ require(tcltk)
         manualclick = read.csv(mf, as.is=TRUE)
 
         if(bcp$datasource == "lobster"){
-          sta.ind = which(manualclick$station == station & manualclick$trip == bcp$trip)
+          sta.ind = which(manualclick$set.no == set.no & manualclick$trip == bcp$trip)
         }
         else{
-          sta.ind = which(manualclick$station == station & manualclick$year == bcp$YR)
+          sta.ind = which(manualclick$set.no == set.no & manualclick$year == bcp$YR)
         }
         if(length(sta.ind) == 0){
           print(bcp$trip)
-           manualclick = rbind(manualclick, data.frame(station = station, start = unlist(as.character(O$manual.method0)), end = unlist(as.character(O$manual.method1)), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id))
+           manualclick = rbind(manualclick, data.frame(set.no = set.no, start = unlist(as.character(O$manual.method0)), end = unlist(as.character(O$manual.method1)), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id))
         }
         else{
-          manualclick$station[sta.ind] = station
+          manualclick$set.no[sta.ind] = set.no
           manualclick$start[sta.ind] = as.character(O$manual.method0)
           manualclick$end[sta.ind] = as.character(O$manual.method1)
           manualclick$depth[sta.ind] = mean( x$depth, na.rm=TRUE )
@@ -637,7 +637,7 @@ require(tcltk)
         }
       }
       else{
-        manualclick = data.frame(station = station, start = as.character(O$manual.method0), end = as.character(O$manual.method1), depth =  mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id)
+        manualclick = data.frame(set.no = set.no, start = as.character(O$manual.method0), end = as.character(O$manual.method1), depth =  mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id)
       }
       write.csv(manualclick, mf, row.names = FALSE )
     }
@@ -651,8 +651,8 @@ require(tcltk)
      print( "Loading values from previously generated .csv")
     if(file.exists(file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"))){
      manualclick = read.csv(file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"), as.is=TRUE)
-     station = unlist(strsplit(bcp$id, "\\."))[4]
-     sta.ind = which(manualclick$station == station & manualclick$year == bcp$YR)
+     set.no = unlist(strsplit(bcp$id, "\\."))[4]
+     sta.ind = which(manualclick$set.no == set.no & manualclick$year == bcp$YR)
      if(length(sta.ind == 1)){
        O$manual.method0 = lubridate::ymd_hms(manualclick$start[sta.ind], tz = "UTC")
        O$manual.method1 = lubridate::ymd_hms(manualclick$end[sta.ind], tz = "UTC")
