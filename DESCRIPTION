@@ -12,5 +12,5 @@ Imports: sp, splines, tcltk
 Suggests: aegis
 License: MIT
 LazyData: true
-URL: https://github.com/jae0/netmensuration
+URL: https://github.com/jakeelement/netmensuration
 RoxygenNote: 7.1.1
