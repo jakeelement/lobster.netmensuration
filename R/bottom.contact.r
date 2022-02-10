@@ -263,7 +263,7 @@ require(tcltk)
       }}
     }
 
-  
+
   if(debug.plot) {
     trange = range( x$ts[O$good], na.rm=TRUE )
     drange = c( quantile( x$depth, c(0.05, 0.975), na.rm=TRUE) , median( x$depth, na.rm=TRUE ) * 1.05 )
@@ -442,6 +442,18 @@ require(tcltk)
     axis(2, ylim=yl,col = "brown",col.lab = "brown", col.axis = "brown",lwd=1,line=3.5)
     mtext(2,text="Opening", col = "brown", line=5.5)
     }
+    }
+browser()
+    ## plot alternate sensor depths (not clickable)
+    if("sensordepth1" %in% names(O$plotdata)){
+      if(length(which(!is.na(O$plotdata$opening[grange]))) > 10){
+        par(new=T)
+        plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], axes=F, ylim=yl, xlab="", ylab="",type="p",col="#A52A2A1A", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
+        smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], spar=.5)
+        lines(smoothingSpline, col="brown")
+        axis(2, ylim=yl,col = "brown",col.lab = "brown", col.axis = "brown",lwd=1,line=3.5)
+        mtext(2,text="Opening", col = "brown", line=5.5)
+      }
     }
 
     #Plot the depth (Clickable)
@@ -644,8 +656,8 @@ require(tcltk)
   }
 
   }
-  
-  
+
+
   #BC- Added condition in case user interaction is desired, no need to do this step.
   if (!is.null(bcp$from.manual.archive) && !bcp$user.interaction) {
      print( "Loading values from previously generated .csv")
