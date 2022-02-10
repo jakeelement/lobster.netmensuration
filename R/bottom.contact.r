@@ -448,7 +448,7 @@ browser()
     if("sensordepth1" %in% names(O$plotdata)){
       if(length(which(!is.na(O$plotdata$sensordepth1[grange]))) > 10){
         par(new=T)
-        plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$sensordepth1[grange]))], O$plotdata$sensordepth1[grange][which(!is.na(O$plotdata$sensordepth1[grange]))], axes=F, ylim=yl, xlab="", ylab="",type="p",col="green", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
+        plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$sensordepth1[grange]))], O$plotdata$sensordepth1[grange][which(!is.na(O$plotdata$sensordepth1[grange]))], axes=F, xlab="", ylab="",type="p",col="green", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
         smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$sensordepth1[grange]))], O$plotdata$sensordepth1[grange][which(!is.na(O$plotdata$sensordepth1[grange]))], spar=.5)
         lines(smoothingSpline, col="green")
         axis(2, ylim=yl,col = "green",col.lab = "green", col.axis = "green",lwd=1,line=3.5)
