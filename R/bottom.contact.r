@@ -446,13 +446,13 @@ require(tcltk)
 browser()
     ## plot alternate sensor depths (not clickable)
     if("sensordepth1" %in% names(O$plotdata)){
-      if(length(which(!is.na(O$plotdata$opening[grange]))) > 10){
+      if(length(which(!is.na(O$plotdata$sensordepth1[grange]))) > 10){
         par(new=T)
-        plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], axes=F, ylim=yl, xlab="", ylab="",type="p",col="#A52A2A1A", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
-        smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], spar=.5)
-        lines(smoothingSpline, col="brown")
-        axis(2, ylim=yl,col = "brown",col.lab = "brown", col.axis = "brown",lwd=1,line=3.5)
-        mtext(2,text="Opening", col = "brown", line=5.5)
+        plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$sensordepth1[grange]))], O$plotdata$sensordepth1[grange][which(!is.na(O$plotdata$sensordepth1[grange]))], axes=F, ylim=yl, xlab="", ylab="",type="p",col="green", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
+        smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$sensordepth1[grange]))], O$plotdata$sensordepth1[grange][which(!is.na(O$plotdata$sensordepth1[grange]))], spar=.5)
+        lines(smoothingSpline, col="green")
+        axis(2, ylim=yl,col = "green",col.lab = "green", col.axis = "green",lwd=1,line=3.5)
+        mtext(2,text=depth.alts[1], col = "green", line=5.5)
       }
     }
 
