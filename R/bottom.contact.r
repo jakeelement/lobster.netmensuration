@@ -414,7 +414,7 @@ require(tcltk)
     #Plot the door spread
     ylim=c(min(O$plotdata$wingspread[grange], na.rm = TRUE)-1,max(O$plotdata$wingspread[grange], na.rm = TRUE)+1)
     if(is.finite(ylim)){
-    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], axes=F, ylim=ylim, xlab="", ylab="",type="p",col="#0000FF1A", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
+    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], axes=F, ylim=ylim, xlab="", ylab="",type="p",col="#0000FF4A", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
       if(length(unique(na.omit(O$plotdata$wingspread[grange]))) > 5 ){
        smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], spar=.5)
        lines(smoothingSpline, col="blue")
@@ -434,9 +434,9 @@ require(tcltk)
 
     #Plot the opening
     if("opening" %in% names(O$plotdata)){
-      if(length(which(!is.na(O$plotdata$opening[grange]))) > 10){
+      if(length(which(!is.na(O$plotdata$opening[grange]))) > 5){
     par(new=T)
-    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], axes=F, ylim=yl, xlab="", ylab="",type="p",col="#A52A2A1A", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
+    plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], axes=F, ylim=yl, xlab="", ylab="",type="p",col="#A52A2A4A", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
     smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$opening[grange]))], O$plotdata$opening[grange][which(!is.na(O$plotdata$opening[grange]))], spar=.5)
     lines(smoothingSpline, col="brown")
     axis(2, ylim=yl,col = "brown",col.lab = "brown", col.axis = "brown",lwd=1,line=3.5)
@@ -466,12 +466,15 @@ require(tcltk)
         mtext(2,text=depth.alts[2], col = "purple", line=5.5)
       }
     }
-    #Plot the depth (Clickable)
+
+
+     #Plot the depth (Clickable)
     par(new=T)
 
     plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$depth[grange]))], O$plotdata$depth[grange][which(!is.na(O$plotdata$depth[grange]))], axes=F, ylim=rev(c(min(O$plotdata$depth[grange], na.rm = TRUE)-1,max(O$plotdata$depth[grange], na.rm = TRUE)+1)), xlab="", ylab="", type="l", main=O$id,xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])),lwd=1)
     axis(4, ylim=rev(c(min(O$plotdata$depth[grange], na.rm = TRUE)-1,max(O$plotdata$depth[grange], na.rm = TRUE)+1)),lwd=1)
     mtext(4,text="Depth", line = 2)
+    mtext('Must click black line', side=3, col = "red", adj=0.75)
 
     #Set up time axis plotting
     abli = seq(O$plotdata$timestamp[grange][1],O$plotdata$timestamp[grange][length(O$plotdata$timestamp[grange])], "1 min")
@@ -590,7 +593,6 @@ require(tcltk)
 
     #END code taken from bottom.contact
 
-
     #User interface
 
      goodans = FALSE
@@ -621,6 +623,13 @@ require(tcltk)
       }
       if(!goodans)print("Did not receive valid command, please try again.")
 
+      #promt user for quality flag value
+      qual <- NULL
+      qual <- readline(prompt = "Add quality flag for this tow (options are 0 or 1): ")
+      if(!(qual %in% c("0","1"))){
+        qual <- readline(prompt = "Invalid quality flag! (options are 0 or 1), enter again if you're sure you want to use this value: ")
+      }
+      
       dev.off()
   }#END plotting loop while not satisfied
 
@@ -638,7 +647,10 @@ require(tcltk)
       manualclick = NULL
       if(file.exists(mf)){
         manualclick = read.csv(mf, as.is=TRUE)
-
+        
+        if(!any(names(manualclick) %in% "quality")){
+          manualclick$quality = NA
+        }
         if(bcp$datasource == "lobster"){
           sta.ind = which(manualclick$set.no == set.no & manualclick$trip == bcp$trip)
         }
@@ -647,7 +659,7 @@ require(tcltk)
         }
         if(length(sta.ind) == 0){
           print(bcp$trip)
-           manualclick = rbind(manualclick, data.frame(set.no = set.no, start = unlist(as.character(O$manual.method0)), end = unlist(as.character(O$manual.method1)), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id))
+           manualclick = rbind(manualclick, data.frame(set.no = set.no, start = unlist(as.character(O$manual.method0)), end = unlist(as.character(O$manual.method1)), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id, quality = qual))
         }
         else{
           manualclick$set.no[sta.ind] = set.no
@@ -656,10 +668,11 @@ require(tcltk)
           manualclick$depth[sta.ind] = mean( x$depth, na.rm=TRUE )
           manualclick$year[sta.ind] = bcp$YR
           manualclick$trip[sta.ind] = bcp$id
+          manualclick$quality[sta.ind] = qual
         }
       }
       else{
-        manualclick = data.frame(set.no = set.no, start = as.character(O$manual.method0), end = as.character(O$manual.method1), depth =  mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id)
+        manualclick = data.frame(set.no = set.no, start = as.character(O$manual.method0), end = as.character(O$manual.method1), depth =  mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id, quality = qual)
       }
       write.csv(manualclick, mf, row.names = FALSE )
     }
@@ -817,7 +830,8 @@ require(tcltk)
     points( depth~ts, x[ O$maxdepth.method.indices, ], pch=20, col=mcol, cex=0.2)
   }
 
-  print( O$summary)
+  print(O$id)
+  print(O$summary)
 
   return( O )
 
