@@ -432,16 +432,16 @@ require(tcltk)
     if(!is.numeric(yl[1]) | is.na(yl[1]) ) yl[1] = 0
     if(!is.numeric(yl[2]) | is.na(yl[2]) ) yl[2] = 10
 
-    #bring in oracle data to warn user what gear type was used for the tow
-    con <- ROracle::dbConnect(drv = DBI::dbDriver("Oracle"),  username = oracle.username, password = oracle.password, dbname = "PTRAN")
-    
-    gear <- ROracle::dbGetQuery(con, 
-                                "SELECT DISTINCT trip_id, set_no, gear 
-                            FROM lobster.iltssets_mv 
-                            WHERE board_date > to_date('2014-09-01','YYYY-MM-DD')
-                            AND haulccd_id = 1")
-    gear_info <- gear %>% filter(TRIP_ID %in% bcp$trip & SET_NO %in% bcp$set.no)
-    if(nrow(gear_info) > 0){gear_info = gear_info$GEAR}else{gear_info = "No gear type info"}
+    #reference additional tow info from iltssets_mv (gear type, tow length)
+    tow_info <- addit.tow.info %>% filter(TRIP_ID %in% bcp$trip & SET_NO %in% bcp$set.no)
+    if(nrow(tow_info) > 0){
+      gear_info = tow_info$GEAR
+      tow_lengthkm = tow_info$DISTANCEKM
+      tow_lengthnm = tow_info$DISTANCENM
+    }else{
+        gear_info = "NA"
+        tow_lengthkm = "NA"
+        tow_lengthnm = "NA"}
     
     #Plot the opening
     if("opening" %in% names(O$plotdata)){
@@ -478,7 +478,6 @@ require(tcltk)
       }
     }
 
-
      #Plot the depth (Clickable)
     par(new=T)
 
@@ -486,7 +485,9 @@ require(tcltk)
     axis(4, ylim=rev(c(min(O$plotdata$depth[grange], na.rm = TRUE)-1,max(O$plotdata$depth[grange], na.rm = TRUE)+1)),lwd=1)
     mtext(4,text="Depth", line = 2)
     mtext('Must click black line', side=3, col = "red", adj=0.75)
-    mtext(paste0("Gear info = ",gear_info), side=3, col = "grey", adj=0.25)
+    mtext(paste0("Gear info = ",gear_info), side=3, col = "grey", adj=0.05)
+    mtext(paste0("Tow Distance(KM) = ", tow_lengthkm), side=3, col = "grey", adj=0.25)
+    mtext(paste0("Tow Distance(NM) = ", tow_lengthnm), side=3, col = "grey", adj=0.45)
     
     #Set up time axis plotting
     abli = seq(O$plotdata$timestamp[grange][1],O$plotdata$timestamp[grange][length(O$plotdata$timestamp[grange])], "1 min")
