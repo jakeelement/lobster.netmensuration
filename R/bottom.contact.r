@@ -4,7 +4,6 @@
 #' @return dataframe with various results
 #' @export
 bottom.contact = function( x, bcp, debugrun=FALSE ) {
-
 require(tcltk)
   # all timestamps must be in Posix/UTC
   # range comparisons seem to fail when they are not
@@ -409,11 +408,10 @@ require(tcltk)
     par(mar=c(5, 8, 4, 4) + 0.1)
 
     grange = min(which(O$good)):max(which(O$good))
-
     if("wingspread" %in% names(O$plotdata)){
     #Plot the door spread
     ylim=c(min(O$plotdata$wingspread[grange], na.rm = TRUE)-1,max(O$plotdata$wingspread[grange], na.rm = TRUE)+1)
-    if(is.finite(ylim)){
+    if(all(is.finite(ylim))){
     plot(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], axes=F, ylim=ylim, xlab="", ylab="",type="p",col="#0000FF4A", main="",xlim=c(min(O$plotdata$timestamp[grange]), max(O$plotdata$timestamp[grange])))
       if(length(unique(na.omit(O$plotdata$wingspread[grange]))) > 5 ){
        smoothingSpline = smooth.spline(O$plotdata$timestamp[grange][which(!is.na(O$plotdata$wingspread[grange]))], O$plotdata$wingspread[grange][which(!is.na(O$plotdata$wingspread[grange]))], spar=.5)
