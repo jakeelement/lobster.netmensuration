@@ -504,7 +504,7 @@ require(tcltk)
       p1 = c(O$plotdata$longitude[grange][1],O$plotdata$latitude[grange][1])
       p2 = c(O$plotdata$longitude[grange][k+1],O$plotdata$latitude[grange][k+1])
       if(!is.null(p1) & !is.null(p2)){
-      if(!is.na(p1) & !is.na(p2))
+      if(!all(is.na(p1)) & !all(is.na(p2)))
            {
              disfromorigin[k+1] = geosphere::distHaversine(p1 , p2, r=6378137)
     }
