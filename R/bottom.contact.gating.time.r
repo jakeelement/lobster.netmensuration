@@ -6,8 +6,8 @@ bottom.contact.gating.time = function( Zt, good, bcp ) {
   # there are (many) cases where timestamps are incorrect due to errors in entry or timezone issues
   out = good
   Ztrange = range(Zt, na.rm=TRUE)
-  if (  ( bcp$time.gate$t0 > Ztrange[1] & bcp$time.gate$t0 < Ztrange[2] ) 
-      & ( bcp$time.gate$t1 > Ztrange[1] &  bcp$time.gate$t1 < Ztrange[2] ) ) {
+  if (  ( bcp$time.gate$t0[1] > Ztrange[1] & bcp$time.gate$t0[1] < Ztrange[2] ) 
+      & ( bcp$time.gate$t1[1] > Ztrange[1] &  bcp$time.gate$t1[1] < Ztrange[2] ) ) {
     i = which( Zt <  bcp$time.gate$t0 | Zt >  bcp$time.gate$t1 )
     good0 = good
     if (length(i) > 0) good[i] = FALSE
