@@ -635,7 +635,7 @@ require(tcltk)
       if(!goodans)print("Did not receive valid command, please try again.")
 
       #promt user for quality flag values
-       qual <- NULL
+       qual <- NA
       # qual <- readline(prompt = "Add quality flag for this tow (options are 0 or 1): ")
       # if(!(qual %in% c("0","1"))){
       #   qual <- readline(prompt = "Invalid quality flag! (options are 0 or 1), enter again if you're sure you want to use this value: ")
@@ -661,7 +661,7 @@ require(tcltk)
       explan = NULL
       if(any(c(qual.spread,qual.touch,qual.lift)==0)){
         explan <- readline(prompt = "Add explanations for 0 qualty flags or leave blank:")
-      }
+      }else{explan = NA}
       dev.off()
   }#END plotting loop while not satisfied
 
