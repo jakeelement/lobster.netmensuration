@@ -13,4 +13,4 @@ Suggests: aegis
 License: MIT
 LazyData: true
 URL: https://github.com/jakeelement/netmensuration
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3

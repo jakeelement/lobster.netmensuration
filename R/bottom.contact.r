@@ -634,13 +634,34 @@ require(tcltk)
       }
       if(!goodans)print("Did not receive valid command, please try again.")
 
-      #promt user for quality flag value
-      qual <- NULL
-      qual <- readline(prompt = "Add quality flag for this tow (options are 0 or 1): ")
-      if(!(qual %in% c("0","1"))){
-        qual <- readline(prompt = "Invalid quality flag! (options are 0 or 1), enter again if you're sure you want to use this value: ")
+      #promt user for quality flag values
+       qual <- NULL
+      # qual <- readline(prompt = "Add quality flag for this tow (options are 0 or 1): ")
+      # if(!(qual %in% c("0","1"))){
+      #   qual <- readline(prompt = "Invalid quality flag! (options are 0 or 1), enter again if you're sure you want to use this value: ")
+      # }
+      
+      qual.spread <- NULL
+      qual.spread <- readline(prompt = "Add quality flag for Wingspread (options are 0 or 1): ")
+      if(!(qual.spread %in% c("0","1"))){
+        qual.spread <- readline(prompt = "Invalid quality flag! (options are 0 or 1), enter again if you're sure you want to use this value: ")
       }
       
+      qual.touch <- NULL
+      qual.touch <- readline(prompt = "Add quality flag for Touchdown (options are 0 or 1): ")
+      if(!(qual.touch %in% c("0","1"))){
+        qual.touch <- readline(prompt = "Invalid quality flag! (options are 0 or 1), enter again if you're sure you want to use this value: ")
+      }
+      
+      qual.lift <- NULL
+      qual.lift <- readline(prompt = "Add quality flag for Liftoff (options are 0 or 1): ")
+      if(!(qual.lift %in% c("0","1"))){
+        qual.lift <- readline(prompt = "Invalid quality flag! (options are 0 or 1), enter again if you're sure you want to use this value: ")
+      }
+      explan = NULL
+      if(any(c(qual.spread,qual.touch,qual.lift)==0)){
+        explan <- readline(prompt = "Add explanations for 0 qualty flags or leave blank:")
+      }
       dev.off()
   }#END plotting loop while not satisfied
 
@@ -662,6 +683,18 @@ require(tcltk)
         if(!any(names(manualclick) %in% "quality")){
           manualclick$quality = NA
         }
+        if(!any(names(manualclick) %in% "quality.wingspread")){
+          manualclick$quality.wingspread = NA
+        }
+        if(!any(names(manualclick) %in% "quality.touchdown")){
+          manualclick$quality.touchdown = NA
+        }
+        if(!any(names(manualclick) %in% "quality.liftoff")){
+          manualclick$quality.liftoff = NA
+        }
+        if(!any(names(manualclick) %in% "explanation")){
+          manualclick$explanation = NA
+        }
         if(bcp$datasource == "lobster"){
           sta.ind = which(manualclick$set.no == set.no & manualclick$trip == bcp$trip)
         }
@@ -670,7 +703,7 @@ require(tcltk)
         }
         if(length(sta.ind) == 0){
           print(bcp$trip)
-           manualclick = rbind(manualclick, data.frame(set.no = set.no, start = unlist(as.character(O$manual.method0)), end = unlist(as.character(O$manual.method1)), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id, quality = qual))
+           manualclick = rbind(manualclick, data.frame(set.no = set.no, start = unlist(as.character(O$manual.method0)), end = unlist(as.character(O$manual.method1)), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id, quality = qual,quality.wingspread = qual.spread, quality.touchdown = qual.touch, quality.liftoff = qual.lift, explanation = explan))
         }
         else{
           manualclick$set.no[sta.ind] = set.no
@@ -680,10 +713,14 @@ require(tcltk)
           manualclick$year[sta.ind] = bcp$YR
           manualclick$trip[sta.ind] = bcp$id
           manualclick$quality[sta.ind] = qual
+          manualclick$quality.wingspread[sta.ind] = qual.spread
+          manualclick$quality.touchdown[sta.ind] = qual.touch
+          manualclick$quality.liftoff[sta.ind] = qual.lift
+          manualclick$explanation[sta.ind] = explan
         }
       }
       else{
-        manualclick = data.frame(set.no = set.no, start = as.character(O$manual.method0), end = as.character(O$manual.method1), depth =  mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id, quality = qual)
+        manualclick = data.frame(set.no = set.no, start = as.character(O$manual.method0), end = as.character(O$manual.method1), depth =  mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id, quality = qual, quality.wingspread = qual.spread, quality.touchdown = qual.touch, quality.liftoff = qual.lift, explanation = explan)
       }
       write.csv(manualclick, mf, row.names = FALSE )
     }
