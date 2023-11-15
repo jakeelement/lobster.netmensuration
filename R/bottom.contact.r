@@ -703,7 +703,8 @@ require(tcltk)
         }
         if(length(sta.ind) == 0){
           print(bcp$trip)
-           manualclick = rbind(manualclick, data.frame(set.no = set.no, start = unlist(as.character(O$manual.method0)), end = unlist(as.character(O$manual.method1)), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id, quality = qual,quality.wingspread = qual.spread, quality.touchdown = qual.touch, quality.liftoff = qual.lift, explanation = explan))
+          new.tow <-  data.frame(set.no = set.no, startdate = as.character(as.Date(as_datetime(O$manual.method0))), starttime = unlist(format(as_datetime(O$manual.method0), "%H:%M:%S")), enddate = as.character(as.Date(as_datetime(O$manual.method1))), endtime = unlist(format(as_datetime(O$manual.method1), "%H:%M:%S")), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id, quality = qual,quality.wingspread = qual.spread, quality.touchdown = qual.touch, quality.liftoff = qual.lift, explanation = explan)
+           manualclick = rbind(manualclick,new.tow)
         }
         else{
           manualclick$set.no[sta.ind] = set.no
@@ -720,7 +721,7 @@ require(tcltk)
         }
       }
       else{
-        manualclick = data.frame(set.no = set.no, start = as.character(O$manual.method0), end = as.character(O$manual.method1), depth =  mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id, quality = qual, quality.wingspread = qual.spread, quality.touchdown = qual.touch, quality.liftoff = qual.lift, explanation = explan)
+        manualclick = data.frame(set.no = set.no, startdate = unlist(as.Date(as_datetime(O$manual.method0))), starttime = unlist(format(as_datetime(O$manual.method0), "%H:%M:%S")), enddate = unlist(as.Date(as_datetime(O$manual.method1))), endtime = unlist(format(as_datetime(O$manual.method1), "%H:%M:%S")), depth =  mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id, quality = qual, quality.wingspread = qual.spread, quality.touchdown = qual.touch, quality.liftoff = qual.lift, explanation = explan)
       }
       write.csv(manualclick, mf, row.names = FALSE )
     }
