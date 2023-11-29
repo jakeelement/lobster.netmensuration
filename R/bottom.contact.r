@@ -635,7 +635,7 @@ require(tcltk)
       if(!goodans)print("Did not receive valid command, please try again.")
 
       #promt user for quality flag values
-       qual <- NA
+      # qual <- NA
       # qual <- readline(prompt = "Add quality flag for this tow (options are 0 or 1): ")
       # if(!(qual %in% c("0","1"))){
       #   qual <- readline(prompt = "Invalid quality flag! (options are 0 or 1), enter again if you're sure you want to use this value: ")
@@ -680,9 +680,9 @@ require(tcltk)
       if(file.exists(mf)){
         manualclick = read.csv(mf, as.is=TRUE)
         
-        if(!any(names(manualclick) %in% "quality")){
-          manualclick$quality = NA
-        }
+        # if(!any(names(manualclick) %in% "quality")){
+        #   manualclick$quality = NA
+        # }
         if(!any(names(manualclick) %in% "quality.wingspread")){
           manualclick$quality.wingspread = NA
         }
@@ -703,7 +703,7 @@ require(tcltk)
         }
         if(length(sta.ind) == 0){
           print(bcp$trip)
-          new.tow <-  data.frame(set.no = set.no, startdate = as.character(as.Date(as_datetime(O$manual.method0))), starttime = unlist(format(as_datetime(O$manual.method0), "%H:%M:%S")), enddate = as.character(as.Date(as_datetime(O$manual.method1))), endtime = unlist(format(as_datetime(O$manual.method1), "%H:%M:%S")), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id, quality = qual,quality.wingspread = qual.spread, quality.touchdown = qual.touch, quality.liftoff = qual.lift, explanation = explan)
+          new.tow <-  data.frame(set.no = set.no, startdate = as.character(as.Date(as_datetime(O$manual.method0))), starttime = unlist(format(as_datetime(O$manual.method0), "%H:%M:%S")), enddate = as.character(as.Date(as_datetime(O$manual.method1))), endtime = unlist(format(as_datetime(O$manual.method1), "%H:%M:%S")), depth = mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id,quality.wingspread = qual.spread, quality.touchdown = qual.touch, quality.liftoff = qual.lift, explanation = explan)
            manualclick = rbind(manualclick,new.tow)
         }
         else{
@@ -721,7 +721,7 @@ require(tcltk)
         }
       }
       else{
-        manualclick = data.frame(set.no = set.no, startdate = unlist(as.Date(as_datetime(O$manual.method0))), starttime = unlist(format(as_datetime(O$manual.method0), "%H:%M:%S")), enddate = unlist(as.Date(as_datetime(O$manual.method1))), endtime = unlist(format(as_datetime(O$manual.method1), "%H:%M:%S")), depth =  mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id, quality = qual, quality.wingspread = qual.spread, quality.touchdown = qual.touch, quality.liftoff = qual.lift, explanation = explan)
+        manualclick = data.frame(set.no = set.no, startdate = unlist(as.Date(as_datetime(O$manual.method0))), starttime = unlist(format(as_datetime(O$manual.method0), "%H:%M:%S")), enddate = unlist(as.Date(as_datetime(O$manual.method1))), endtime = unlist(format(as_datetime(O$manual.method1), "%H:%M:%S")), depth =  mean( x$depth, na.rm=TRUE ), year = bcp$YR, trip = bcp$id, quality.wingspread = qual.spread, quality.touchdown = qual.touch, quality.liftoff = qual.lift, explanation = explan)
       }
       write.csv(manualclick, mf, row.names = FALSE )
     }
