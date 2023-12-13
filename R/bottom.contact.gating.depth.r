@@ -20,6 +20,7 @@ bottom.contact.gating.depth = function( Z, good, bcp ) {
   if (length(ir) > 0) good[ir] =FALSE
   depth.bottom = zm$mode
 
+
   ##--------------------------------
   # eliminiate records that are shallower than a given percentage of the bottom depth
   i = which(  Z< ( bcp$depthproportion * depth.bottom ) )
